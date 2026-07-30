@@ -1,0 +1,25 @@
+# Postgres local pour le dev. En prod (Coolify), la DB est un service séparé —
+# on ne déploie que l'app et on lui passe DATABASE_URL.
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    ports:
+      # POSTGRES_PORT permet de faire cohabiter plusieurs projets sur la même
+      # machine (docker compose lit .env, pas .env.local — ou passer la
+      # variable dans le shell).
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
