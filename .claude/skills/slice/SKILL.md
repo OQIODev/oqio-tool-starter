@@ -11,7 +11,13 @@ Livrer **une seule** tranche, complètement. Ne pas en entamer une deuxième.
 
 Lire `BACKLOG.md`. Prendre la première tranche non cochée, sauf si l'utilisateur en désigne une.
 
-Si toutes les tranches sont cochées : ne rien implémenter, écrire `BACKLOG VIDE` et s'arrêter. C'est le signal d'arrêt d'une boucle.
+Si toutes les tranches sont cochées : ne rien implémenter, s'arrêter, et écrire exactement ceci sur sa propre ligne — c'est le signal d'arrêt d'une boucle, dans la forme attendue par `ralph-loop` :
+
+```
+<promise>BACKLOG VIDE</promise>
+```
+
+Ne l'écrire que si c'est littéralement vrai. Jamais pour sortir d'une boucle où on se sent bloqué.
 
 ## 2. Planifier
 

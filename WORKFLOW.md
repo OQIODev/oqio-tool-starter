@@ -49,19 +49,34 @@ Ne saute pas cette étape en te disant que tu as l'idée en tête. Ce n'est pas 
 
 Une tranche, de bout en bout : plan, test, code, vérification, commit. Puis tu relances. Et encore.
 
-Quand tu veux que ça enchaîne sans toi, deux options :
+Quand tu veux que ça enchaîne sans toi :
 
 ```
 /loop /slice
 ```
 
+Natif, marche partout (app comme terminal). Sans intervalle, il s'auto-régule : il relance `/slice` quand le précédent a fini.
+
+**`ralph-loop` ne marche que dans le terminal `claude`**, pas dans l'app — il fonctionne par un Stop hook qui intercepte la fin de session. Si tu es en terminal et que tu le veux :
+
 ```
-/ralph-loop /slice --completion-promise "BACKLOG VIDE" --max-iterations 10
+/ralph-loop /slice --completion-promise "BACKLOG VIDE" --max-iterations 6
 ```
 
-`/loop` relance simplement. `/ralph-loop` renvoie le même prompt en boucle et refuse de sortir avant que la promesse de complétion soit vraie — plus têtu, donc mieux pour un backlog long, et c'est exactement pour ça que `/slice` termine sur `BACKLOG VIDE`.
+La promesse doit être émise par `/slice` sous la forme `<promise>BACKLOG VIDE</promise>` — c'est déjà le cas, ne change pas cette chaîne d'un côté sans l'autre.
 
-À lancer quand le backlog est net et que tu vas faire autre chose. À **ne pas** lancer sur un backlog vague — une boucle sans critère d'arrêt clair produit du code plausible et faux. Mets toujours `--max-iterations`.
+À lancer quand le backlog est net et que tu vas faire autre chose. Mets toujours `--max-iterations` : à peu près le nombre de tranches restantes plus deux, jamais 50.
+
+**Ce que boucle ralph, et ce qu'il oublie.** Il renvoie le *même prompt* à chaque tour, sans l'historique de conversation. Entre deux itérations, seuls survivent les fichiers et git. Une itération = un `/slice` = une tranche : il n'essaie pas de tout faire d'un coup, et il ne se souvient pas de ce qu'il a décidé au tour précédent.
+
+C'est pour ça que `/slice` coche la tranche dans `BACKLOG.md` avant de rendre la main — **le backlog est la mémoire de la boucle.** L'itération suivante lit le fichier et sait où elle en est.
+
+Deux conséquences :
+
+- **Au début d'un projet, ralph ne sert à rien.** Backlog vide → `/slice` répond `BACKLOG VIDE` → la boucle s'arrête aussitôt. Fais `/cadrage` d'abord.
+- **Ne boucle jamais sur une consigne vague** du type `/ralph-loop "construis l'outil"`. Sans backlog pour porter l'état, il redécide tout à chaque tour et tu récoltes des réécritures.
+
+Et fais **la première tranche à la main**. C'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle — pas après six itérations.
 
 ### 3. Vérifier — avant de dire que c'est fini
 
@@ -133,8 +148,9 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 | Démarrer un outil de zéro | `/nouvel-outil <nom>` |
 | Transformer une idée en spec | `/cadrage` |
 | Avancer sur le projet, sans plus de précision | `/slice` |
-| Développer plusieurs tranches sans surveiller | `/loop /slice` ou `/ralph-loop` |
-| Arrêter une boucle en cours | `/cancel-ralph` |
+| Développer plusieurs tranches sans surveiller | `/loop /slice` |
+| Idem, en terminal, avec un critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
+| Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
 | Voir l'app tourner | `/run` |
 | Explorer une idée sans rien construire | `/superpowers:brainstorming` |
