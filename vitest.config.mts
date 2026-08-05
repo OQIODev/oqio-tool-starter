@@ -24,6 +24,8 @@ export default defineConfig({
           name: "integration",
           include: ["tests/integration/**/*.test.ts"],
           environment: "node",
+          // Charge DATABASE_URL et bascule sur la base d'intégration.
+          setupFiles: ["./tests/integration/setup.ts"],
         },
       },
     ],

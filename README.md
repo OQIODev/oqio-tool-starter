@@ -34,7 +34,7 @@ Aide-mémoire complet — quel skill à quel moment, et quoi faire quand ça dé
 - `withErrorHandling` pour les routes API, logger JSON structuré, `AuthError`
 - Headers de sécurité (CSP en report-only — à basculer en enforce avant la mise en prod)
 - Route `/api/health` qui teste la DB, pour les sondes d'uptime
-- Vitest configuré avec 8 tests qui couvrent le logger et la gestion d'erreurs
+- Trois niveaux de test qui tournent vraiment : 8 tests unitaires (logger, gestion d'erreurs), 3 d'intégration contre un vrai Postgres, 3 e2e du parcours d'authentification dans un navigateur. Les deux derniers créent leur propre base — jamais celle du dev
 - Dockerfile standalone qui applique les migrations au démarrage, + `docker-compose.yml`
 
 ## Déploiement

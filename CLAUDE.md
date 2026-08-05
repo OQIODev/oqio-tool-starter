@@ -38,10 +38,13 @@ Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de
 npm run dev              # Dev (port 3000)
 npm run verify           # lint + typecheck + tests unit — à passer avant tout commit
 npm run build            # Build production
-npm run test:e2e         # Playwright
+npm run test:integration # Vitest contre un vrai Postgres (base <base>_test)
+npm run test:e2e         # Playwright, navigateur réel (base <base>_e2e, port 3100)
 npx prisma migrate dev   # Nouvelle migration (dev)
 docker compose up -d     # Postgres local
 ```
+
+`test:integration` et `test:e2e` ont besoin de Postgres lancé, et créent leur **propre** base — ils ne touchent jamais celle du dev. Au premier `test:e2e` sur une machine : `npx playwright install chromium`.
 
 ## Guardrails
 - `npm run verify` doit passer avant tout commit. Pas d'exception.
