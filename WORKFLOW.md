@@ -78,6 +78,8 @@ Deux conséquences :
 
 Et fais **la première tranche à la main**. C'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle — pas après six itérations.
 
+**La première tranche qui touche l'écran tranche la direction visuelle.** Typo, couleurs, parti pris : une ligne dans `DECISIONS.md`, les valeurs dans `src/app/globals.css`. Les tranches suivantes n'ont plus à décider, elles appliquent. `frontend-design` fait le travail de goût tout seul (voir plus bas) — ce qu'il ne sait pas faire, c'est se souvenir de ce qu'il a choisi au tour d'avant. C'est le fichier qui s'en souvient, exactement comme `BACKLOG.md` porte la mémoire de la boucle.
+
 ### 3. Vérifier — avant de dire que c'est fini
 
 ```
@@ -87,6 +89,14 @@ Et fais **la première tranche à la main**. C'est là qu'on voit si le découpa
 `/slice` l'appelle déjà tout seul. Tu le lances à la main quand tu doutes, ou après avoir bricolé quelque chose toi-même.
 
 Ce que ça fait : `npm run verify` (lint + types + tests), **puis** l'app lancée pour de vrai et le parcours constaté. Un build vert ne prouve rien.
+
+Ce qu'il ne regarde pas, c'est l'interface. Quand la tranche touche à l'écran, enchaîne :
+
+```
+/web-design-guidelines src/app/**/*.tsx
+```
+
+Une centaine de règles — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`. Sortie en `fichier:ligne`, donc corrigeable directement. Un parcours qui aboutit ne prouve pas qu'il soit utilisable.
 
 ### 4. Nettoyer et livrer
 
@@ -125,6 +135,8 @@ Où ils se réveillent, sans que tu demandes :
 | Travail parallèle sur plusieurs fichiers | `using-git-worktrees`, `subagent-driven-development` |
 | Fin de branche, merge ou PR | `finishing-a-development-branch` |
 
+`frontend-design` marche pareil sans venir de superpowers : il se réveille dès qu'une page ou un composant se construit, et il force un parti pris esthétique au lieu du Tailwind par défaut. Rien à taper non plus.
+
 Tu peux forcer l'un d'eux à la main si tu veux, avec son nom complet :
 
 ```
@@ -152,6 +164,7 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 | Idem, en terminal, avec un critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
 | Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
+| Savoir si l'interface tient (a11y, clavier, contraste) | `/web-design-guidelines` |
 | Voir l'app tourner | `/run` |
 | Explorer une idée sans rien construire | `/superpowers:brainstorming` |
 | Débugger un truc qui résiste | `/superpowers:systematic-debugging` |
@@ -181,6 +194,7 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 2. **Ne collectionne pas les skills.** Chaque skill est du contexte à charger et une façon de faire de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
 3. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.
 4. **Ne laisse pas la spec grossir.** Si `SPEC.md` dépasse deux pages, c'est que des décisions d'implémentation y ont glissé. Elles vont dans `DECISIONS.md`, ou nulle part.
+5. **Ne laisse pas la direction visuelle se rejouer à chaque tranche.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans direction écrite dans `DECISIONS.md` et posée dans `globals.css`, la tranche 5 ne ressemblera pas à la tranche 2.
 
 ---
 

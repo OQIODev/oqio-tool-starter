@@ -20,6 +20,7 @@ C'est la règle qui compte le plus. Il existe exactement une façon de faire cha
 | Logs serveur | `logInfo` / `logWarn` / `logError` de `@/lib/utils/logger` |
 | Validation d'entrée | Zod |
 | Classes CSS conditionnelles | `cn()` de `@/lib/utils/cn` |
+| Couleurs et typo | Les tokens `@theme` de `src/app/globals.css` — jamais une valeur en dur |
 
 Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de hit DB). Il ne remplace jamais `requireAuthUser()` côté serveur.
 
@@ -47,6 +48,7 @@ docker compose up -d     # Postgres local
 - Une tranche = un commit. Format : `type(scope): description` (feat, fix, refactor, chore, docs, test).
 - Ne jamais déclarer une tranche finie sans l'avoir vue tourner — voir `/verify`.
 - Décision technique non évidente → une ligne dans [DECISIONS.md](DECISIONS.md).
+- Direction visuelle tranchée **une fois**, à la première tranche qui touche l'interface : une ligne dans [DECISIONS.md](DECISIONS.md), les valeurs dans `globals.css`. Les tranches suivantes s'y conforment, elles ne la rejouent pas.
 - Élément hors périmètre de la tranche en cours → l'écrire dans BACKLOG.md, ne pas le traiter maintenant.
 
 ## Déploiement

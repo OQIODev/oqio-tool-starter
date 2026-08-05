@@ -1,7 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* La direction visuelle de l'outil vit ici, et nulle part ailleurs.
+   Elle se tranche à la première tranche qui touche l'interface, et se note
+   en une ligne dans DECISIONS.md. Les valeurs ci-dessous sont un point de
+   départ neutre, pas une décision : elles sont là pour être remplacées. */
+
 @theme {
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-body: ui-sans-serif, system-ui, sans-serif;
+
   --color-bg: oklch(0.99 0 0);
   --color-fg: oklch(0.2 0 0);
   --color-muted: oklch(0.55 0 0);
