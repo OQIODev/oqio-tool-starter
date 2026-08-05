@@ -48,7 +48,7 @@ docker compose up -d     # Postgres local
 - Une tranche = un commit. Format : `type(scope): description` (feat, fix, refactor, chore, docs, test).
 - Ne jamais déclarer une tranche finie sans l'avoir vue tourner — voir `/verify`.
 - Décision technique non évidente → une ligne dans [DECISIONS.md](DECISIONS.md).
-- Direction visuelle tranchée **une fois**, à la première tranche qui touche l'interface : une ligne dans [DECISIONS.md](DECISIONS.md), les valeurs dans `globals.css`. Les tranches suivantes s'y conforment, elles ne la rejouent pas.
+- Direction visuelle tranchée **une fois**, au cadrage : une ligne dans [DECISIONS.md](DECISIONS.md), les valeurs dans `globals.css`. Toutes les tranches d'interface s'y conforment, elles ne la rejouent pas.
 - Élément hors périmètre de la tranche en cours → l'écrire dans BACKLOG.md, ne pas le traiter maintenant.
 
 ## Déploiement

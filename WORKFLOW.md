@@ -35,7 +35,9 @@ Ouvre ensuite une session Claude Code **dans ce dossier**. Tout le reste s'y pas
 /cadrage
 ```
 
-40 minutes de dialogue, une question à la fois. En sortie : `SPEC.md` (1-2 pages) et `BACKLOG.md` (3 à 7 tranches).
+40 minutes de dialogue, une question à la fois. En sortie : `SPEC.md` (1-2 pages), `BACKLOG.md` (3 à 7 tranches), et **la direction visuelle de l'outil** — une ligne dans `DECISIONS.md`, les valeurs dans `globals.css`.
+
+C'est le seul moment du projet où on parle d'apparence, et ça tient en trois questions : ce que l'outil doit dégager, une référence que tu aimes ou que tu refuses, clair/sombre et dense/aéré. Après, c'est écrit et tout s'y conforme. Si tu réponds vague, il écrit `À TRANCHER` plutôt que d'inventer.
 
 La question qui compte : **à quoi tu verras que ça marche ?** Si tu ne sais pas y répondre, l'outil n'est pas prêt à être construit. Le skill insistera.
 
@@ -78,7 +80,9 @@ Deux conséquences :
 
 Et fais **la première tranche à la main**. C'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle — pas après six itérations.
 
-**La première tranche qui touche l'écran tranche la direction visuelle.** Typo, couleurs, parti pris : une ligne dans `DECISIONS.md`, les valeurs dans `src/app/globals.css`. Les tranches suivantes n'ont plus à décider, elles appliquent. `/slice` charge `frontend-design` lui-même dès que la tranche touche à l'écran — tu n'as rien à taper. Ce que ce skill ne sait pas faire, c'est se souvenir de ce qu'il a choisi au tour d'avant : il retire un parti pris neuf à chaque génération. C'est `DECISIONS.md` qui s'en souvient, exactement comme `BACKLOG.md` porte la mémoire de la boucle.
+**Aucune tranche ne décide de l'apparence** — la direction est tranchée au cadrage. Dès que la tranche touche à l'écran, `/slice` lit la ligne de `DECISIONS.md` et charge `frontend-design` avec, comme contrainte. Tu n'as rien à taper.
+
+Ce que ce skill ne sait pas faire, c'est se souvenir : il retire un parti pris neuf à chaque génération. C'est `DECISIONS.md` qui porte la mémoire, exactement comme `BACKLOG.md` porte celle de la boucle. Si la ligne dit `À TRANCHER`, la tranche décide à sa place et **le dit dans son compte rendu** — c'est là que tu contestes, pas trois tranches plus tard.
 
 ### 3. Vérifier — avant de dire que c'est fini
 
@@ -194,7 +198,7 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 2. **Ne collectionne pas les skills.** Chaque skill est du contexte à charger et une façon de faire de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
 3. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.
 4. **Ne laisse pas la spec grossir.** Si `SPEC.md` dépasse deux pages, c'est que des décisions d'implémentation y ont glissé. Elles vont dans `DECISIONS.md`, ou nulle part.
-5. **Ne laisse pas la direction visuelle se rejouer à chaque tranche.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans direction écrite dans `DECISIONS.md` et posée dans `globals.css`, la tranche 5 ne ressemblera pas à la tranche 2.
+5. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans la ligne de `DECISIONS.md` pour le contraindre, la tranche 5 ne ressemblera pas à la tranche 2, et tu ne le verras qu'à la fin.
 
 ---
 

@@ -31,10 +31,9 @@ Test d'abord quand le comportement est testable en unitaire : écrire le test, *
 
 Respecter « un seul chemin pour chaque chose » (CLAUDE.md). Ne pas introduire de dépendance nouvelle sans le dire explicitement dans le compte rendu.
 
-**Si la tranche touche à l'écran**, charger `frontend-design` avant de coder l'interface. Puis, selon le cas :
+**Si la tranche touche à l'écran**, lire d'abord la ligne de direction visuelle dans `DECISIONS.md` — elle sort de `/cadrage`. Puis charger `frontend-design` pour coder l'interface, en lui donnant cette direction comme contrainte : il exécute un parti pris déjà tranché, il n'en propose pas un autre. Ne pas rejouer le choix même s'il en suggère un meilleur — il retire un parti pris neuf à chaque génération, et deux tranches d'affilée ne doivent pas produire deux apparences.
 
-- **Aucune ligne de direction visuelle dans `DECISIONS.md`** — c'est la première tranche d'interface : le laisser trancher un parti pris, l'écrire en une ligne dans `DECISIONS.md` (typo, couleurs, densité, ce qui est exclu) et poser les valeurs dans `src/app/globals.css`.
-- **Une ligne existe déjà** — s'y conformer. Ne pas rejouer le choix, même si `frontend-design` propose autre chose : il retire un parti pris neuf à chaque génération, et deux tranches d'affilée ne doivent pas produire deux apparences.
+Cas particulier : la ligne dit `À TRANCHER`, ou il n'y en a pas (cadrage sauté, projet antérieur à cette règle). Alors c'est cette tranche qui tranche — laisser `frontend-design` décider, écrire la ligne dans `DECISIONS.md`, poser les valeurs dans `src/app/globals.css`, et **le dire dans le compte rendu**. C'est une décision que l'utilisateur doit pouvoir contester tout de suite, pas trois tranches plus tard.
 
 ## 4. Vérifier
 
