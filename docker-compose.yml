@@ -2,7 +2,9 @@
 # on ne déploie que l'app et on lui passe DATABASE_URL.
 services:
   postgres:
-    image: postgres:17-alpine
+    # Aligné sur la production (Coolify) — une seule majeure de Postgres à
+    # connaître entre dev et prod.
+    image: postgres:18-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -14,7 +16,10 @@ services:
       # variable dans le shell).
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # `/var/lib/postgresql`, PAS `/var/lib/postgresql/data` : depuis la 18,
+      # l'image range les données dans un sous-dossier par version majeure et
+      # refuse de démarrer si le montage est à l'ancien emplacement.
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
