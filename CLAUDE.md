@@ -44,7 +44,7 @@ npx prisma migrate dev   # Nouvelle migration (dev)
 docker compose up -d     # Postgres local
 ```
 
-`test:integration` et `test:e2e` ont besoin de Postgres lancé, et créent leur **propre** base — ils ne touchent jamais celle du dev. Au premier `test:e2e` sur une machine : `npx playwright install chromium`.
+`test:integration` et `test:e2e` ont besoin de Postgres lancé et créent leur **propre** base — jamais celle du dev. Deux choses à savoir sur `test:e2e` : au premier passage sur une machine, `npx playwright install chromium` ; et **arrêter le `npm run dev`** avant de le lancer, Next 16 refuse un second serveur de dev sur le même dossier.
 
 ## Guardrails
 - `npm run verify` doit passer avant tout commit. Pas d'exception.
