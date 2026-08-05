@@ -31,6 +31,11 @@ Test d'abord quand le comportement est testable en unitaire : écrire le test, *
 
 Respecter « un seul chemin pour chaque chose » (CLAUDE.md). Ne pas introduire de dépendance nouvelle sans le dire explicitement dans le compte rendu.
 
+**Si la tranche touche à l'écran**, charger `frontend-design` avant de coder l'interface. Puis, selon le cas :
+
+- **Aucune ligne de direction visuelle dans `DECISIONS.md`** — c'est la première tranche d'interface : le laisser trancher un parti pris, l'écrire en une ligne dans `DECISIONS.md` (typo, couleurs, densité, ce qui est exclu) et poser les valeurs dans `src/app/globals.css`.
+- **Une ligne existe déjà** — s'y conformer. Ne pas rejouer le choix, même si `frontend-design` propose autre chose : il retire un parti pris neuf à chaque génération, et deux tranches d'affilée ne doivent pas produire deux apparences.
+
 ## 4. Vérifier
 
 `npm run verify` doit passer. Puis suivre `/verify` : lancer l'app et constater le critère de vérification de la tranche. Aucune tranche n'est finie parce que le code compile.

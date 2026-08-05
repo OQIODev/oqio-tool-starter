@@ -2,10 +2,10 @@
 name: verify
 description: Vérifie qu'une tranche marche vraiment — checks automatiques puis parcours réel dans l'app qui tourne. À faire avant de déclarer quoi que ce soit fini.
 when_to_use: Avant de clore une tranche ou de committer, ou quand l'utilisateur demande si ça marche.
-allowed-tools: Bash(npm run *) Bash(npx prisma *) Bash(docker compose *)
+allowed-tools: Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Skill WebFetch
 ---
 
-Un build vert ne prouve pas qu'un outil marche. Les deux étapes sont obligatoires.
+Un build vert ne prouve pas qu'un outil marche. Les étapes 1 et 2 sont obligatoires ; la 3 l'est dès que la tranche a touché à l'écran.
 
 ## 1. Checks automatiques
 
@@ -26,6 +26,16 @@ Lancer l'app et **constater** le critère de vérification de la tranche (dans `
 
 Si le parcours touche l'authentification, le faire connecté **et** déconnecté — une route protégée qui répond sans session est un bug, pas un détail.
 
-## 3. Rendre compte
+## 3. Relecture de l'interface
+
+Seulement si la tranche a touché à l'écran — sinon passer directement à l'étape 4.
+
+Charger `web-design-guidelines` sur les fichiers modifiés par la tranche. Il va chercher les règles à jour et rend ses constats en `fichier:ligne` : accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`.
+
+Un parcours qui aboutit ne prouve pas qu'il soit utilisable. Corriger ce qui est constaté et dans le périmètre de la tranche ; écrire le reste dans `BACKLOG.md`, section « Capté en passant ». Ne rien passer en silence.
+
+Ce n'est pas une relecture de goût : la direction visuelle est déjà tranchée dans `DECISIONS.md`, cette étape ne la rediscute pas.
+
+## 4. Rendre compte
 
 Dire ce qui a été constaté, pas ce qui devrait marcher. Si une partie n'a pas pu être vérifiée, le dire explicitement plutôt que de la présenter comme validée.

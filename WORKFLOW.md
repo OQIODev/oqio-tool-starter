@@ -78,7 +78,7 @@ Deux conséquences :
 
 Et fais **la première tranche à la main**. C'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle — pas après six itérations.
 
-**La première tranche qui touche l'écran tranche la direction visuelle.** Typo, couleurs, parti pris : une ligne dans `DECISIONS.md`, les valeurs dans `src/app/globals.css`. Les tranches suivantes n'ont plus à décider, elles appliquent. `frontend-design` fait le travail de goût tout seul (voir plus bas) — ce qu'il ne sait pas faire, c'est se souvenir de ce qu'il a choisi au tour d'avant. C'est le fichier qui s'en souvient, exactement comme `BACKLOG.md` porte la mémoire de la boucle.
+**La première tranche qui touche l'écran tranche la direction visuelle.** Typo, couleurs, parti pris : une ligne dans `DECISIONS.md`, les valeurs dans `src/app/globals.css`. Les tranches suivantes n'ont plus à décider, elles appliquent. `/slice` charge `frontend-design` lui-même dès que la tranche touche à l'écran — tu n'as rien à taper. Ce que ce skill ne sait pas faire, c'est se souvenir de ce qu'il a choisi au tour d'avant : il retire un parti pris neuf à chaque génération. C'est `DECISIONS.md` qui s'en souvient, exactement comme `BACKLOG.md` porte la mémoire de la boucle.
 
 ### 3. Vérifier — avant de dire que c'est fini
 
@@ -90,13 +90,13 @@ Et fais **la première tranche à la main**. C'est là qu'on voit si le découpa
 
 Ce que ça fait : `npm run verify` (lint + types + tests), **puis** l'app lancée pour de vrai et le parcours constaté. Un build vert ne prouve rien.
 
-Ce qu'il ne regarde pas, c'est l'interface. Quand la tranche touche à l'écran, enchaîne :
+Il a une troisième étape quand la tranche a touché à l'écran : il relit le code avec `web-design-guidelines` — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`, en `fichier:ligne`. Là non plus tu n'as rien à taper, c'est dans son `SKILL.md`. Un parcours qui aboutit ne prouve pas qu'il soit utilisable.
+
+Pour la lancer seule, sur du code que tu as bricolé à la main :
 
 ```
 /web-design-guidelines src/app/**/*.tsx
 ```
-
-Une centaine de règles — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`. Sortie en `fichier:ligne`, donc corrigeable directement. Un parcours qui aboutit ne prouve pas qu'il soit utilisable.
 
 ### 4. Nettoyer et livrer
 
@@ -135,7 +135,7 @@ Où ils se réveillent, sans que tu demandes :
 | Travail parallèle sur plusieurs fichiers | `using-git-worktrees`, `subagent-driven-development` |
 | Fin de branche, merge ou PR | `finishing-a-development-branch` |
 
-`frontend-design` marche pareil sans venir de superpowers : il se réveille dès qu'une page ou un composant se construit, et il force un parti pris esthétique au lieu du Tailwind par défaut. Rien à taper non plus.
+`frontend-design` et `web-design-guidelines` sont d'une troisième nature : ce sont bien des réflexes, mais on ne compte pas sur le hasard pour qu'ils se réveillent — `/slice` et `/verify` les nomment explicitement dans leur `SKILL.md`. Rien à taper, et cette fois c'est garanti.
 
 Tu peux forcer l'un d'eux à la main si tu veux, avec son nom complet :
 
