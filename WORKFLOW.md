@@ -111,7 +111,7 @@ Une centaine de règles — accessibilité, navigation clavier, états de formul
 Rien d'automatisé, c'est volontaire — deux presets, même code :
 
 - **quick** : pousser sur Vercel, y mettre `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`
-- **durable** : Coolify sur Hetzner construit le `Dockerfile`, Postgres à côté, `npx prisma migrate deploy` au déploiement
+- **durable** : Coolify sur Hetzner construit le `Dockerfile`, Postgres à côté. Les migrations partent au démarrage du conteneur, il n'y a rien à lancer à la main
 
 ---
 

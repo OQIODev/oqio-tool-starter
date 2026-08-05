@@ -35,14 +35,18 @@ Aide-mémoire complet — quel skill à quel moment, et quoi faire quand ça dé
 - Headers de sécurité (CSP en report-only — à basculer en enforce avant la mise en prod)
 - Route `/api/health` qui teste la DB, pour les sondes d'uptime
 - Vitest configuré avec 8 tests qui couvrent le logger et la gestion d'erreurs
-- Dockerfile standalone + `docker-compose.yml`
+- Dockerfile standalone qui applique les migrations au démarrage, + `docker-compose.yml`
 
 ## Déploiement
 
 Même code, deux presets :
 
 - **quick** — Vercel + Postgres managé (Neon). `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` en variables d'env.
-- **durable** — Coolify sur Hetzner. Coolify construit le `Dockerfile`, la DB est un service Postgres à côté. Lancer `npx prisma migrate deploy` au déploiement.
+- **durable** — Coolify sur Hetzner. Coolify construit le `Dockerfile`, la DB est un service Postgres à côté.
+
+Dans les deux cas, les seules variables à fournir sont `DATABASE_URL`, `BETTER_AUTH_SECRET` (un secret **distinct** de celui du dev) et `BETTER_AUTH_URL` (l'URL publique, en https).
+
+**Les migrations n'ont pas d'étape manuelle** : `docker-entrypoint.sh` lance `migrate deploy` avant de démarrer le serveur. C'est idempotent, donc sans effet quand il n'y a rien à appliquer. Si la base est injoignable ou `DATABASE_URL` absent, le conteneur sort en code 1 plutôt que de servir des requêtes sur un schéma qui n'est pas celui du code.
 
 ## Conventions
 

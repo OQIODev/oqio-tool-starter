@@ -54,4 +54,4 @@ docker compose up -d     # Postgres local
 ## Déploiement
 Deux presets, même code :
 - **quick** — Vercel + Postgres managé (Neon). Pour publier vite.
-- **durable** — Docker standalone → Coolify sur Hetzner. `DATABASE_URL` pointe le Postgres du serveur, `migrate deploy` au déploiement.
+- **durable** — Docker standalone → Coolify sur Hetzner. `DATABASE_URL` pointe le Postgres du serveur. Les migrations s'appliquent au démarrage du conteneur (`docker-entrypoint.sh`) — pas d'étape manuelle.
