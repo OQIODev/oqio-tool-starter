@@ -95,7 +95,7 @@ Tout est dans [CLAUDE.md](CLAUDE.md). Les décisions techniques non évidentes s
 
 Rien ici n'est figé, et rien n'est vraiment neuf. Le système bouge à chaque projet — ce qui est publié aujourd'hui ne ressemblera pas à ce qu'il sera dans deux mois. L'essentiel vient d'ailleurs :
 
-- **La boucle qui relance l'agent jusqu'à épuisement du backlog** — la technique *Ralph* de Geoffrey Huntley. Le plugin `ralph-loop` en vient, et `/slice` émet son signal d'arrêt dans le format qu'il attend.
+- **La boucle qui relance l'agent jusqu'à épuisement du backlog** — le *Ralph Wiggum Loop* de [Geoffrey Huntley](https://github.com/ghuntley/how-to-ralph-wiggum). Le principe : réinjecter le même prompt à chaque tour, sans historique de conversation, et laisser l'état vivre dans les fichiers. Le plugin `ralph-loop` en vient, et `/slice` émet son signal d'arrêt dans le format qu'il attend. C'est aussi pourquoi `BACKLOG.md` est coché **avant** de rendre la main : le backlog est la mémoire de la boucle.
 - **Le juge aveugle, qui ne valide que si le résultat tient face à une référence réelle** — le *Gauntlet Loop* de [Matt Shumer](https://x.com/mattshumer_/status/2081830214384886228), sorti de son projet « Claude of Duty » en juillet 2026. C'est de là que vient l'idée que le critique doit être un sous-agent distinct, privé du contexte de celui qui a produit, et jugeant contre un point de comparaison extérieur plutôt que contre les critères qu'on s'est écrits soi-même.
 
 Ce qui est de nous : les avoir mis dans le même workflow, et les avoir passés sur de vrais outils plutôt que sur une démo.
