@@ -29,6 +29,7 @@ Puis lancer un sous-agent `general-purpose` dont le prompt contient :
 
 - le critère de vérification de la tranche, recopié **mot pour mot** depuis `BACKLOG.md`, et le critère de réussite de `SPEC.md`
 - la consigne de lancer l'app et de piloter le navigateur lui-même, screenshot inclus
+- l'obligation de s'assurer que le serveur qu'il pilote est bien **celui de ce dossier** avant de constater quoi que ce soit — un dev server d'un autre projet sur le même port donne un faux verdict dans les deux sens, et il est aveugle au code, donc rien ne le lui signalera
 - l'interdiction de lire le diff, le dernier commit, le plan ou le compte rendu — il constate ce qu'il voit à l'écran, pas ce que le code prétend faire
 - l'interdiction de corriger quoi que ce soit : il constate, il ne répare pas
 - l'obligation de regarder les logs serveur — une page qui s'affiche avec une erreur 500 derrière n'est pas verte

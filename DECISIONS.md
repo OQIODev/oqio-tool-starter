@@ -9,3 +9,4 @@ La direction visuelle est une de ces lignes, avec une contrainte de plus : elle 
 - 2026-07-30 — Better Auth plutôt que Supabase Auth — users dans notre propre DB Prisma, donc identique sur Vercel et sur Hetzner. Coupe le dernier couplage à un provider.
 - 2026-07-30 — `output: "standalone"` + Dockerfile dès le départ — le preset `durable` ne demande aucun changement de code.
 - 2026-08-06 — le parcours réel de `/verify` est constaté par un sous-agent aveugle, et l'interface jugée contre une référence nommée — celui qui écrit le code reconnaît son intention au lieu de regarder l'écran, et une rubrique qu'on s'écrit à soi-même, on la passe toujours.
+- 2026-08-06 — `autoPort` dans `.claude/launch.json` plutôt qu'un port fixe — plusieurs outils issus de ce starter tournent en parallèle sur la même machine. Le sous-agent de `/verify` est aveugle au code : s'il tombe sur le dev server d'un autre projet sur le port 3000, rien ne le lui signale et il rend un faux verdict.
