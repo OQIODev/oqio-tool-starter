@@ -12,18 +12,20 @@ Trois skills suffisent pour 95 % du travail : `/cadrage`, `/slice`, `/verify`. L
 
 ## Le parcours complet d'un outil
 
-### 0. Créer le projet — depuis n'importe quelle session Claude Code
-
-```
-/nouvel-outil coach-sportif
-```
-
-Copie le starter, `git init`, génère le secret d'auth, installe les dépendances. Puis dans le Terminal, dans le nouveau dossier :
+### 0. Créer le projet
 
 ```bash
+git clone https://github.com/OQIODev/oqio-tool-starter.git coach-sportif
+cd coach-sportif && rm -rf .git && git init
+npm install
+cp .env.example .env.local       # remplir BETTER_AUTH_SECRET (openssl rand -base64 32)
 docker compose up -d
 npx prisma migrate deploy
 ```
+
+Pense à remplacer le `name` dans `package.json`, et à vider `DECISIONS.md` des lignes héritées du starter.
+
+> Chez nous cette étape est une skill `/nouvel-outil` qui fait tout ça d'un coup. Elle n'est pas dans le repo : elle est câblée sur des chemins locaux, elle ne servirait à personne d'autre. Les commandes ci-dessus font le même travail.
 
 La migration des tables auth est déjà dans le starter — pas besoin d'en créer une. `migrate dev` ne sert que quand tu modifies `schema.prisma`.
 
@@ -129,7 +131,7 @@ Rien d'automatisé, c'est volontaire — deux presets, même code :
 
 Deux natures de skills, à ne pas confondre :
 
-- **Les tiens** (`/cadrage`, `/slice`, `/verify`, `/nouvel-outil`) sont des **commandes**. Tu les tapes, il se passe quelque chose.
+- **Les tiens** (`/cadrage`, `/slice`, `/verify`) sont des **commandes**. Tu les tapes, il se passe quelque chose.
 - **Ceux de superpowers** sont des **réflexes**. Leur description dit « Use when… » — Claude les charge tout seul au moment concerné. Il n'y a rien à taper, et c'est pour ça qu'ils n'apparaissent pas comme des étapes du parcours.
 
 Où ils se réveillent, sans que tu demandes :
@@ -167,7 +169,7 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 
 | Ce que tu veux | Ce que tu lances |
 |---|---|
-| Démarrer un outil de zéro | `/nouvel-outil <nom>` |
+| Démarrer un outil de zéro | `git clone` du starter (étape 0) |
 | Transformer une idée en spec | `/cadrage` |
 | Avancer sur le projet, sans plus de précision | `/slice` |
 | Développer plusieurs tranches sans surveiller | `/loop /slice` |
