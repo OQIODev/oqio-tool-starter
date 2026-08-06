@@ -39,6 +39,8 @@ Ouvre ensuite une session Claude Code **dans ce dossier**. Tout le reste s'y pas
 
 C'est le seul moment du projet où on parle d'apparence, et ça tient en trois questions : ce que l'outil doit dégager, une référence que tu aimes ou que tu refuses, clair/sombre et dense/aéré. Après, c'est écrit et tout s'y conforme. Si tu réponds vague, il écrit `À TRANCHER` plutôt que d'inventer.
 
+Sur la référence, il va insister pour que tu la **nommes** — un produit, un site, un objet précis. Elle sert deux fois : à générer l'interface, puis à la juger en `/verify`. « Quelque chose de sobre » ne peut pas servir de barre.
+
 La question qui compte : **à quoi tu verras que ça marche ?** Si tu ne sais pas y répondre, l'outil n'est pas prêt à être construit. Le skill insistera.
 
 Ne saute pas cette étape en te disant que tu as l'idée en tête. Ce n'est pas pour toi que la spec est écrite, c'est pour l'agent — et pour toi dans trois semaines.
@@ -94,7 +96,11 @@ Ce que ce skill ne sait pas faire, c'est se souvenir : il retire un parti pris n
 
 Ce que ça fait : `npm run verify` (lint + types + tests), **puis** l'app lancée pour de vrai et le parcours constaté. Un build vert ne prouve rien.
 
-Il a une troisième étape quand la tranche a touché à l'écran : il relit le code avec `web-design-guidelines` — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`, en `fichier:ligne`. Là non plus tu n'as rien à taper, c'est dans son `SKILL.md`. Un parcours qui aboutit ne prouve pas qu'il soit utilisable.
+**Ce n'est pas celui qui a écrit le code qui constate.** Le parcours part dans un sous-agent en contexte frais, qui reçoit le critère de vérification de la tranche et rien d'autre — pas le diff, pas le plan, pas le compte rendu. Il lance l'app, regarde, et rend un verdict : constaté, infirmé, ou pas pu constater. C'est délibéré : un agent qui vient d'écrire le code ne regarde pas l'écran, il reconnaît son intention. Et si le verdict est « infirmé », la correction est jugée par un sous-agent **neuf** — celui qui a vu la version cassée validerait la reprise sur parole.
+
+Il a une troisième étape quand la tranche a touché à l'écran, et elle contrôle deux choses différentes. L'utilisabilité, avec le code sous les yeux : `web-design-guidelines` — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`, en `fichier:ligne`. Puis la tenue, sans le code : le sous-agent compare ce qui est à l'écran à la **référence nommée** dans `DECISIONS.md`, celle que `/cadrage` t'a arrachée. Une interface jugée contre les seuls critères qu'on s'est écrits les passe toujours ; il faut une référence qui existe pour de vrai. Là non plus tu n'as rien à taper, c'est dans son `SKILL.md`.
+
+Un parcours qui aboutit ne prouve pas qu'il soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne.
 
 Pour la lancer seule, sur du code que tu as bricolé à la main :
 
