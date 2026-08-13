@@ -48,11 +48,13 @@ docker compose up -d     # Postgres local
 
 ## Guardrails
 - `npm run verify` doit passer avant tout commit. Pas d'exception.
-- Une tranche = un commit. Format : `type(scope): description` (feat, fix, refactor, chore, docs, test).
+- Une tranche = un commit. Format : `type(scope): description` (feat, fix, refactor, chore, docs, test). Son corps porte le constat de vérification.
 - Ne jamais déclarer une tranche finie sans l'avoir vue tourner — voir `/verify`.
 - Décision technique non évidente → une ligne dans [DECISIONS.md](DECISIONS.md).
 - Direction visuelle tranchée **une fois** : au cadrage si le projet en sort, sinon à la première tranche d'interface, qui doit alors le signaler dans son compte rendu. Une ligne dans [DECISIONS.md](DECISIONS.md), les valeurs dans `globals.css`. Les tranches suivantes s'y conforment, elles ne la rejouent pas.
 - Élément hors périmètre de la tranche en cours → l'écrire dans BACKLOG.md, ne pas le traiter maintenant.
+- [BACKLOG.md](BACKLOG.md) ne peut que rétrécir : une tranche livrée en sort, elle ne se coche pas. Ce qui est fait vit dans `git log`.
+- Le constat de vérification va dans [JOURNAL.md](JOURNAL.md) et le corps du commit, jamais dans BACKLOG.md. `JOURNAL.md` ne se lit **jamais** au démarrage d'une tranche — c'est ce qui l'autorise à grossir sans rien coûter.
 
 ## Déploiement
 Deux presets, même code :

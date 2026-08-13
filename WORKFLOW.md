@@ -73,9 +73,11 @@ La promesse doit être émise par `/slice` sous la forme `<promise>BACKLOG VIDE<
 
 À lancer quand le backlog est net et que tu vas faire autre chose. Mets toujours `--max-iterations` : à peu près le nombre de tranches restantes plus deux, jamais 50.
 
-**Ce que boucle ralph, et ce qu'il oublie.** Il renvoie le *même prompt* à chaque tour, sans l'historique de conversation. Entre deux itérations, seuls survivent les fichiers et git. Une itération = un `/slice` = une tranche : il n'essaie pas de tout faire d'un coup, et il ne se souvient pas de ce qu'il a décidé au tour précédent.
+**Ce que boucle ralph, et ce qu'il oublie.** Il renvoie le *même prompt* à chaque tour, et une itération = un `/slice` = une tranche : il n'essaie pas de tout faire d'un coup.
 
-C'est pour ça que `/slice` coche la tranche dans `BACKLOG.md` avant de rendre la main — **le backlog est la mémoire de la boucle.** L'itération suivante lit le fichier et sait où elle en est.
+Attention en revanche à une idée fausse qu'on a nous-mêmes propagée ici : le plugin ne repart **pas** d'un contexte neuf. Son hook rend `{"decision":"block","reason":<prompt>}`, ce qui empêche la session de se terminer et réinjecte le prompt **dans la même session** — l'historique persiste donc jusqu'à la compaction. C'est le Ralph original de Huntley qui relance un process vierge, pas celui-là. Conséquence pratique : le contexte accumule **et** les fichiers sont relus à chaque tour, donc un backlog qui grossit se paie deux fois.
+
+C'est pour ça que `/slice` **retire** la tranche de `BACKLOG.md` avant de rendre la main — **le backlog est la mémoire de la boucle.** L'itération suivante lit le fichier et voit ce qui reste : elle n'a rien à trier entre fait et pas fait, ce qui est écrit est à faire.
 
 Deux conséquences :
 
@@ -196,7 +198,9 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 
 **Une boucle tourne dans le vide** → arrête-la. Le backlog est soit vide, soit mal écrit.
 
-**Tu ne sais plus où en est le projet** → `BACKLOG.md` est l'état d'avancement. Les tranches cochées sont faites, le reste non.
+**Tu ne sais plus où en est le projet** → `BACKLOG.md` dit ce qui reste, `git log --oneline` ce qui est fait, `JOURNAL.md` ce qu'on a vu tourner. Pour retrouver une tranche livrée avec son critère, telle qu'elle était écrite : `git log -p -- BACKLOG.md`.
+
+**Tu ne sais plus ce qui est vraiment prouvé** → la section « Réserves » du backlog. C'est ce qui est livré sans avoir été constaté, et c'est le seul endroit qui le dit.
 
 ---
 
@@ -206,7 +210,8 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 2. **Ne collectionne pas les skills.** Chaque skill est du contexte à charger et une façon de faire de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
 3. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.
 4. **Ne laisse pas la spec grossir.** Si `SPEC.md` dépasse deux pages, c'est que des décisions d'implémentation y ont glissé. Elles vont dans `DECISIONS.md`, ou nulle part.
-5. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans la ligne de `DECISIONS.md` pour le contraindre, la tranche 5 ne ressemblera pas à la tranche 2, et tu ne le verras qu'à la fin.
+5. **Ne laisse rien s'accumuler dans `BACKLOG.md`.** C'est le seul fichier que chaque itération relit en entier. Un backlog qui garde ses tranches faites et leurs constats devient illisible bien avant d'être gros — et l'agent **imite le format qu'il y trouve**, donc ça empire tout seul, sans que personne l'ait demandé. Mesuré sur un vrai projet : 176 Ko en huit jours, dont 91 % de récit, et un `Read` qui ne servait plus qu'un tiers du fichier. Ce qui est fait sort du fichier.
+6. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans la ligne de `DECISIONS.md` pour le contraindre, la tranche 5 ne ressemblera pas à la tranche 2, et tu ne le verras qu'à la fin.
 
 ---
 

@@ -9,21 +9,27 @@ Livrer **une seule** tranche, complètement. Ne pas en entamer une deuxième.
 
 ## 1. Choisir
 
-Lire `BACKLOG.md`. Prendre la première tranche non cochée, sauf si l'utilisateur en désigne une.
+D'abord `git status --porcelain BACKLOG.md`. S'il est sale, l'itération précédente est morte avant son commit : lire `git diff BACKLOG.md`, restaurer, et repartir de là. Une tranche livrée étant retirée du fichier, une itération interrompue peut avoir emporté une tranche sans avoir livré son code.
 
-Si toutes les tranches sont cochées : ne rien implémenter, s'arrêter, et écrire exactement ceci sur sa propre ligne — c'est le signal d'arrêt d'une boucle, dans la forme attendue par `ralph-loop` :
+Lire `BACKLOG.md`. Prendre la première tranche de la section « Tranches », sauf si l'utilisateur en désigne une.
+
+Si la section « Tranches » est vide : ne rien implémenter, s'arrêter, et écrire exactement ceci sur sa propre ligne — c'est le signal d'arrêt d'une boucle, dans la forme attendue par `ralph-loop` :
 
 ```
 <promise>BACKLOG VIDE</promise>
 ```
 
-Ne l'écrire que si c'est littéralement vrai. Jamais pour sortir d'une boucle où on se sent bloqué.
+Ne l'écrire que si c'est littéralement vrai. Jamais pour sortir d'une boucle où on se sent bloqué. Une réserve ou une ligne de « Capté en passant » n'est pas une tranche : le backlog peut être vide alors que le fichier ne l'est pas.
+
+Si la tranche demande une action hors dépôt — un clic dans une console, un secret à poser, un arbitrage — ne rien implémenter : décrire exactement le geste attendu, puis passer à la première tranche implémentable en le disant. Ces tranches restent dans le fichier ; ce sont elles qui, sinon, finissent en réserves que personne ne voit.
+
+Et s'il n'en reste aucune d'implémentable, s'arrêter en émettant le même signal, après avoir listé les gestes attendus. Il n'annonce pas que tout est livré : il dit qu'il n'y a plus rien à prendre sans intervention. Sans lui, la boucle reprendrait la même tranche et redirait la même chose à chaque tour.
 
 ## 2. Planifier
 
-Lire `SPEC.md` et les fichiers concernés avant d'écrire quoi que ce soit. Poser le plan en tâches courtes avec les chemins de fichiers exacts. Le garder en tête, pas dans un fichier.
+Lire `SPEC.md` et les fichiers concernés avant d'écrire quoi que ce soit. Si la tranche cite une spec (`docs/PRD.md:154`), aller lire **ces lignes** — pas le document entier. Poser le plan en tâches courtes avec les chemins de fichiers exacts. Le garder en tête, pas dans un fichier.
 
-Si la tranche s'avère trop grosse pour un commit propre, la scinder dans `BACKLOG.md` et ne traiter que la première moitié.
+Si la tranche s'avère trop grosse pour un commit propre, la **remplacer** dans `BACKLOG.md` par ses deux moitiés — chacune portant ce qu'elle a besoin de savoir — et ne traiter que la première. La tranche d'origine sort du fichier comme n'importe quelle autre : pas de bloc de contexte qui survit à ses enfants.
 
 ## 3. Implémenter
 
@@ -43,10 +49,16 @@ Si ça ne passe pas : corriger et re-vérifier. Boucler au maximum trois fois su
 
 ## 5. Clore
 
-- Cocher la tranche dans `BACKLOG.md`
-- Ajouter dans « Capté en passant » ce qui a surgi et n'appartenait pas à la tranche
+Le tout dans **un seul commit**.
+
+- **Retirer la tranche de `BACKLOG.md`** — pas la cocher, la supprimer
+- Le constat de vérification dans `JOURNAL.md`, et là seulement
+- Une ligne dans « Réserves » si c'est livré sans être prouvé, avec le fait qui la lèverait
+- Une ligne dans « Capté en passant » pour ce qui a surgi et n'appartenait pas à la tranche
 - Une ligne dans `DECISIONS.md` si un choix technique non évident a été fait
-- Un commit : `type(scope): description`
+- Un commit `type(scope): description` dont le corps porte le constat
+
+Rien de tout ça ne se recopie dans `BACKLOG.md` : c'est ainsi qu'il reste lisible au tour suivant.
 
 ## Compte rendu
 

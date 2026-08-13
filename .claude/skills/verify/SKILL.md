@@ -58,3 +58,5 @@ Ce n'est pas une relecture de goût : la direction est déjà tranchée dans `DE
 ## 4. Rendre compte
 
 Dire ce qui a été constaté, pas ce qui devrait marcher. Si une partie n'a pas pu être vérifiée, le dire explicitement plutôt que de la présenter comme validée.
+
+Le récit du constat va dans `JOURNAL.md` et dans le corps du commit — **jamais dans `BACKLOG.md`**, qui ne dit que ce qui reste à faire. Ce qui n'a pas pu être vérifié se pose en **une ligne** dans « Réserves », avec le fait qui la lèverait.

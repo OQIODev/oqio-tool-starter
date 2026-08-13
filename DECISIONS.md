@@ -4,6 +4,8 @@ Une ligne par décision technique non évidente. Pas d'ADR formel — le but est
 
 Format : `AAAA-MM-JJ — décision — pourquoi`
 
+Des décisions, pas des constats : ce qui a été vu tourner va dans [JOURNAL.md](JOURNAL.md). Ce fichier n'archive rien — il empêche de re-litiger.
+
 La direction visuelle est une de ces lignes, avec une contrainte de plus : elle nomme ce qui est retenu, ce qui est exclu, et une **référence réelle** suivie de `aimée` ou `refusée`. C'est cette référence que `/verify` prend comme barre pour juger l'interface — une ligne sans référence laisse chaque tranche se comparer à elle-même.
 
 - 2026-07-30 — Better Auth plutôt que Supabase Auth — users dans notre propre DB Prisma, donc identique sur Vercel et sur Hetzner. Coupe le dernier couplage à un provider.

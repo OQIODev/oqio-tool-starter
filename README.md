@@ -6,7 +6,7 @@ C'est le setup qu'on utilise chez [OQIO](https://oqio.ch) pour sortir nos outils
 
 ## La boucle
 
-Trois skills, dans `.claude/skills/`. Elles font 55 lignes chacune. Claude Code les charge automatiquement quand tu ouvres le dossier.
+Trois skills, dans `.claude/skills/`. Elles font une soixantaine de lignes chacune. Claude Code les charge automatiquement quand tu ouvres le dossier.
 
 | Skill | Quand | Ce qu'il fait |
 |---|---|---|
@@ -14,13 +14,17 @@ Trois skills, dans `.claude/skills/`. Elles font 55 lignes chacune. Claude Code 
 | `/slice` | À répétition | Livre une tranche de bout en bout : plan, test, code, vérif, commit |
 | `/verify` | Avant de clore | Checks automatiques **et** parcours réel dans l'app qui tourne |
 
-Trois choses les rendent différentes d'un prompt bien tourné.
+Quatre choses les rendent différentes d'un prompt bien tourné.
 
 **Le juge est aveugle.** Celui qui a écrit le code ne constate pas son propre critère — il reconnaît son intention au lieu de regarder l'écran. `/verify` confie donc le parcours à un sous-agent en contexte frais, qui lance l'app, pilote le navigateur, et à qui il est **interdit** de lire le diff, le dernier commit ou le compte rendu. Il constate ce qui est à l'écran, pas ce que le code prétend faire. Il rend `CONSTATÉ`, `INFIRMÉ` ou `PAS PU CONSTATER`. Si c'est `INFIRMÉ`, on corrige et on relance un sous-agent **neuf** — jamais celui qui a vu la version cassée, il validerait la correction sur parole.
 
 **Rien n'est fini parce que ça compile.** Un build vert ne prouve rien sur un outil. Aucune tranche ne se clôt sans avoir été vue tourner, et le compte rendu doit dire ce qui a été sauté plutôt que de le présenter comme validé.
 
 **La boucle a un critère d'arrêt.** Quand le backlog est vide, `/slice` écrit `<promise>BACKLOG VIDE</promise>` et s'arrête. C'est ce qui la rend automatisable — avec `/loop` ou le plugin `ralph-loop`, tu lances et tu reviens plus tard. La skill a `AskUserQuestion` en `disallowed-tools` justement pour ne pas se bloquer sur une question au milieu de la nuit.
+
+**Le backlog ne peut que rétrécir.** Une tranche livrée n'est pas cochée, elle est **retirée** du fichier, dans le même commit que le code — et son constat de vérification part dans [JOURNAL.md](JOURNAL.md) et dans le corps de ce commit. `BACKLOG.md` ne dit donc jamais que ce qui reste à faire, et `git log -p -- BACKLOG.md` rend chaque tranche livrée avec son critère, verbatim. Ce qui est livré **sans avoir été prouvé** va dans une section « Réserves » : c'est ce qu'on cherche en premier trois semaines plus tard, et c'est sinon enterré dans des tranches marquées faites.
+
+On l'a appris en mesurant. Sur un de nos outils, le backlog a pris 176 Ko en huit jours, dont 91 % de récit que personne n'avait demandé — au point qu'un seul `Read` n'en servait plus qu'un tiers, et que la section listant le travail restant tombait dans la partie tronquée. Huntley l'écrit en majuscules dans la source qu'on crédite plus bas : `DO NOT PLACE STATUS REPORT UPDATES INTO @AGENT.md`. On avait pris sa boucle sans sa règle d'hygiène. Si tu travailles en branches avec squash-merge, garde en tête que le corps du commit est une archive et qu'un squash l'écrase ; `JOURNAL.md`, lui, survit.
 
 Aide-mémoire complet — quel skill à quel moment, et quoi faire quand ça déraille : [WORKFLOW.md](WORKFLOW.md).
 
@@ -71,7 +75,7 @@ Si tu veux la boucle sans le starter — sur du Rails, du SvelteKit, du Go — e
 1. **[CLAUDE.md](CLAUDE.md)** — le vrai travail. Le tableau « un seul chemin pour chaque chose » et le bloc Commandes déclarent ta stack. C'est ce fichier que les skills lisent pour savoir comment tu travailles.
 2. **`.claude/skills/verify/SKILL.md:5`** — `allowed-tools` liste `npm run *`, `npx prisma *`, `docker compose *`. À remplacer par tes commandes.
 3. **`.claude/skills/verify/SKILL.md:24-26`** — préparation de l'infra avant le parcours (base qui tourne, migrations à jour) et la note sur le serveur de dev.
-4. **`.claude/skills/slice/SKILL.md:40`** et **`verify:13`** — `npm run verify` (lint + typecheck + tests unitaires). Une seule commande qui doit sortir en code 0.
+4. **`.claude/skills/slice/SKILL.md:44`** et **`verify:13`** — `npm run verify` (lint + typecheck + tests unitaires). Une seule commande qui doit sortir en code 0.
 5. **`.claude/skills/cadrage/SKILL.md:22`** — la question sur le preset de déploiement.
 
 Le reste — le juge aveugle, `BACKLOG VIDE`, la règle du « vu tourner » — ne dépend d'aucune techno.
@@ -95,7 +99,7 @@ Tout est dans [CLAUDE.md](CLAUDE.md). Les décisions techniques non évidentes s
 
 Rien ici n'est figé, et rien n'est vraiment neuf. Le système bouge à chaque projet — ce qui est publié aujourd'hui ne ressemblera pas à ce qu'il sera dans deux mois. L'essentiel vient d'ailleurs :
 
-- **La boucle qui relance l'agent jusqu'à épuisement du backlog** — le *Ralph Wiggum Loop* de [Geoffrey Huntley](https://github.com/ghuntley/how-to-ralph-wiggum). Le principe : réinjecter le même prompt à chaque tour, sans historique de conversation, et laisser l'état vivre dans les fichiers. Le plugin `ralph-loop` en vient, et `/slice` émet son signal d'arrêt dans le format qu'il attend. C'est aussi pourquoi `BACKLOG.md` est coché **avant** de rendre la main : le backlog est la mémoire de la boucle.
+- **La boucle qui relance l'agent jusqu'à épuisement du backlog** — le *Ralph Wiggum Loop* de [Geoffrey Huntley](https://github.com/ghuntley/how-to-ralph-wiggum). Le principe : réinjecter le même prompt à chaque tour, sans historique de conversation, et laisser l'état vivre dans les fichiers. Le plugin `ralph-loop` en vient, et `/slice` émet son signal d'arrêt dans le format qu'il attend. C'est aussi pourquoi une tranche livrée **sort** de `BACKLOG.md` avant de rendre la main : le backlog est la mémoire de la boucle — et une mémoire sans oubli finit par ne plus être consultable.
 - **Le juge aveugle, qui ne valide que si le résultat tient face à une référence réelle** — le *Gauntlet Loop* de [Matt Shumer](https://x.com/mattshumer_/status/2081830214384886228), sorti de son projet « Claude of Duty » en juillet 2026. C'est de là que vient l'idée que le critique doit être un sous-agent distinct, privé du contexte de celui qui a produit, et jugeant contre un point de comparaison extérieur plutôt que contre les critères qu'on s'est écrits soi-même.
 
 Ce qui est de nous : les avoir mis dans le même workflow, et les avoir passés sur de vrais outils plutôt que sur une démo.
