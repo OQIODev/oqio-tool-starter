@@ -5,7 +5,9 @@ services:
     # Aligné sur la production (Coolify) — une seule majeure de Postgres à
     # connaître entre dev et prod.
     image: postgres:18-alpine
-    restart: unless-stopped
+    # Compose de dev : rien ne remonte tout seul au lancement de Docker Desktop.
+    # Un conteneur qui tourne, c'est parce qu'on l'a demandé.
+    restart: "no"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

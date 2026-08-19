@@ -38,11 +38,15 @@ Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de
 npm run dev              # Dev (port 3000)
 npm run verify           # lint + typecheck + tests unit — à passer avant tout commit
 npm run build            # Build production
+npm test                 # Tests unit, une passe
+npm run test:watch       # Vitest en watch — le seul mode qui ne rend pas la main
 npm run test:integration # Vitest contre un vrai Postgres (base <base>_test)
 npm run test:e2e         # Playwright, navigateur réel (base <base>_e2e, port 3100)
 npx prisma migrate dev   # Nouvelle migration (dev)
 docker compose up -d     # Postgres local
 ```
+
+Tout ce qui porte `test` tourne en une passe et rend la main. `test:watch` est le seul watcher, il se lance sur intention et se coupe à la main — un watcher oublié tient son pool de workers en vie pour la journée.
 
 `test:integration` et `test:e2e` ont besoin de Postgres lancé et créent leur **propre** base — jamais celle du dev. Deux choses à savoir sur `test:e2e` : au premier passage sur une machine, `npx playwright install chromium` ; et **arrêter le `npm run dev`** avant de le lancer, Next 16 refuse un second serveur de dev sur le même dossier.
 

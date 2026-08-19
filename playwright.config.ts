@@ -24,7 +24,12 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `npm run dev -- --port ${PORT}`,
+    // Le binaire local. Pas `npm run dev` : le script `dev` porte le port du
+    // projet, et deux `--port` sur la même commande sont un piège. Pas `npx`
+    // non plus : il interpose un `npm exec` entre le process rendu et le vrai
+    // serveur — mesuré, tuer le premier laisse le second debout, et c'est comme
+    // ça qu'un dev server e2e reste en vie après la passe.
+    command: `./node_modules/.bin/next dev --port ${PORT}`,
     // `/login` ne touche pas la base : la sonde de démarrage n'a donc pas
     // besoin que les migrations soient déjà passées.
     url: `${BASE_URL}/login`,
