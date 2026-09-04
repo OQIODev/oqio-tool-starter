@@ -6,7 +6,7 @@ Aide-mémoire. Si tu ne sais pas quoi lancer, la réponse est dans le parcours c
 
 **Cadrer une fois, trancher en boucle, vérifier avant de dire que c'est fini.**
 
-Trois skills suffisent pour 95 % du travail : `/cadrage`, `/slice`, `/verify`. Le reste est du confort.
+Trois skills portent 95 % du travail : `/cadrage`, `/slice`, `/verify`. Une quatrième, `/debug`, est un secours : elle n'est pas dans le parcours, elle s'enclenche quand une correction a déjà raté une fois.
 
 Ce sont des **commandes** : tu les tapes, il se passe quelque chose. Elles ne se déclenchent pas seules — c'est délibéré, voir `DECISIONS.md` au 2026-09-04. Seul `/verify` reste invocable par l'agent, parce que `/slice` l'appelle.
 
@@ -132,6 +132,7 @@ Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/s
 | Idem, en terminal, avec critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
 | Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
+| Un bug résiste, ou une correction a déjà raté | `/debug` |
 | Savoir si l'interface tient (a11y, clavier, contraste) | `/verify` — il applique `.claude/rules/web-interface-guidelines.md` |
 | Voir l'app tourner | `/run` |
 | Nettoyer sans changer le comportement | `/simplify` |
@@ -149,6 +150,8 @@ Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/s
 **Il réécrit du code qui marchait** → `CLAUDE.md` n'a pas été lu ou est contredit. Vérifie qu'il n'y a pas deux façons de faire la même chose.
 
 **Il emploie trois mots pour la même chose** → `CONTEXT.md` est vide ou incomplet. Le terme manquant y va, avec ses synonymes interdits.
+
+**La même tranche casse deux fois au même endroit** → `/slice` charge `/debug` tout seul au deuxième échec. Si tu le lances à la main : il refuse de théoriser avant d'avoir une commande qui passe au rouge sur ce bug précis, et c'est cette contrainte qui fait le travail.
 
 **Une boucle tourne dans le vide** → arrête-la. Le backlog est soit vide, soit mal écrit.
 

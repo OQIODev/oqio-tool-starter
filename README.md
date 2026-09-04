@@ -6,13 +6,16 @@ C'est le setup qu'on utilise chez [OQIO](https://oqio.ch) pour sortir nos outils
 
 ## La boucle
 
-Trois skills, dans `.claude/skills/`. Entre 80 et 95 lignes chacune. `/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify` seul reste invocable par l'agent, parce que `/slice` l'appelle.
+Quatre skills, dans `.claude/skills/`, entre 80 et 95 lignes chacune. Trois portent la boucle, la quatrième est un secours.
+
+`/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify` et `/debug` restent invocables par l'agent, parce que `/slice` les appelle — une skill user-invoked peut en appeler une model-invocable, jamais une autre user-invoked.
 
 | Skill | Quand | Ce qu'il fait |
 |---|---|---|
 | `/cadrage` | Une fois, au début | Idée → `SPEC.md` court, `BACKLOG.md` de tranches verticales, `CONTEXT.md` du vocabulaire |
 | `/slice` | À répétition | Livre une tranche de bout en bout : plan, test, code, vérif, commit |
 | `/verify` | Avant de clore | Checks automatiques **et** parcours réel dans l'app qui tourne |
+| `/debug` | Quand une correction a raté | Construit une commande qui passe au **rouge**, puis réduit, hypothétise, verrouille |
 
 Quatre choses les rendent différentes d'un prompt bien tourné.
 

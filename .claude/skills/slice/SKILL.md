@@ -55,7 +55,7 @@ Cas particulier : la ligne dit `À TRANCHER`, ou il n'y en a pas (cadrage sauté
 
 Suivre `/verify` : les checks automatiques, puis l'app lancée pour de vrai et le critère constaté par un sous-agent en contexte frais. Aucune tranche n'est finie parce que le code compile.
 
-Si ça ne passe pas : corriger et re-vérifier. Boucler au maximum trois fois sur le même échec ; au-delà, s'arrêter et rendre compte de ce qui bloque plutôt que d'empiler des tentatives.
+Si ça ne passe pas : corriger et re-vérifier. **Au deuxième échec sur le même symptôme**, ne pas tenter une troisième correction — charger `/debug`. Deux correctifs qui ratent au même endroit veulent dire qu'on ne sait pas encore pourquoi ça casse, et le troisième est un coup de dés. Si `/debug` rend la main sans cause trouvée, s'arrêter et rendre compte de ce qui bloque plutôt que d'empiler des tentatives.
 
 **Fini quand** : un verdict `CONSTATÉ` a été rendu sur le critère recopié à l'étape 1, par quelqu'un qui n'a pas écrit le code. « Ça devrait marcher » n'est pas un verdict, un build vert non plus.
 
