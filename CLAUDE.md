@@ -22,6 +22,7 @@ C'est la règle qui compte le plus. Il existe exactement une façon de faire cha
 | Classes CSS conditionnelles | `cn()` de `@/lib/utils/cn` |
 | Couleurs et typo | Les tokens `@theme` de `src/app/globals.css` — jamais une valeur en dur |
 | Barre d'utilisabilité de l'interface | `.claude/rules/web-interface-guidelines.md` — figé, jamais refetché en cours de vérification |
+| Coder une interface | `/ecran` — il exécute la direction de `DECISIONS.md`, il ne la rediscute pas |
 | Bug qui résiste à une première correction | `/debug` — une commande rouge avant toute hypothèse, jamais de correctif au hasard |
 
 Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de hit DB). Il ne remplace jamais `requireAuthUser()` côté serveur.

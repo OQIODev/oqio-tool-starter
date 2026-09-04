@@ -6,7 +6,7 @@ Aide-mémoire. Si tu ne sais pas quoi lancer, la réponse est dans le parcours c
 
 **Cadrer une fois, trancher en boucle, vérifier avant de dire que c'est fini.**
 
-Trois skills portent 95 % du travail : `/cadrage`, `/slice`, `/verify`. Une quatrième, `/debug`, est un secours : elle n'est pas dans le parcours, elle s'enclenche quand une correction a déjà raté une fois.
+Trois skills portent 95 % du travail : `/cadrage`, `/slice`, `/verify`. Deux autres s'enclenchent seules quand il faut — `/ecran` dès qu'une tranche touche à l'interface, `/debug` quand une correction a déjà raté une fois. Aucune ne se tape à la main.
 
 Ce sont des **commandes** : tu les tapes, il se passe quelque chose. Elles ne se déclenchent pas seules — c'est délibéré, voir `DECISIONS.md` au 2026-09-04. Seul `/verify` reste invocable par l'agent, parce que `/slice` l'appelle.
 
@@ -78,7 +78,7 @@ Mets toujours `--max-iterations` : le nombre de tranches restantes plus deux, ja
 
 Deux choses à savoir avant de boucler, détaillées dans `DECISIONS.md` : ralph réinjecte le prompt dans la **même** session (le contexte accumule), et c'est `BACKLOG.md` qui porte la mémoire de la boucle. Donc : jamais de boucle sur un backlog vide, jamais de boucle sur une consigne vague du type « construis l'outil ».
 
-**Aucune tranche ne décide de l'apparence** — la direction est tranchée au cadrage, `/slice` la lit et contraint `frontend-design` avec. Tu n'as rien à taper. Si la ligne dit `À TRANCHER`, la tranche décide et **le dit dans son compte rendu** : c'est là que tu contestes.
+**Aucune tranche ne décide de l'apparence** — la direction est tranchée au cadrage, et `/slice` charge `/ecran`, qui l'exécute sans la rediscuter. Tu n'as rien à taper. Si la ligne dit `À TRANCHER`, la tranche décide et **le dit dans son compte rendu** : c'est là que tu contestes.
 
 ### 3. Vérifier — avant de dire que c'est fini
 
@@ -173,5 +173,5 @@ puis passer sa ligne à `true` dans `.claude/settings.json`. Ce qu'il faisait d'
 2. **Ne collectionne pas les skills.** Chaque skill model-invocable est du contexte permanent et un concurrent de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
 3. **Ne laisse rien s'accumuler dans `BACKLOG.md`.** C'est le seul fichier que chaque itération relit en entier, et l'agent imite le format qu'il y trouve. Mesure et raison dans `DECISIONS.md`.
 4. **Ne laisse pas la spec grossir — ni bouger.** Si `SPEC.md` dépasse deux pages, des décisions d'implémentation y ont glissé : elles vont dans `DECISIONS.md`. Et une fois le cadrage fini, elle ne se modifie plus.
-5. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération. Sans la ligne de `DECISIONS.md`, la tranche 5 ne ressemblera pas à la tranche 2, et tu le verras à la fin.
+5. **Ne saute pas les trois questions d'apparence du cadrage.** Sans la ligne de `DECISIONS.md`, `/ecran` tranche à ta place à la première tranche d'interface — il le dit, mais tu découvres la direction du projet en lisant un compte rendu au lieu de l'avoir choisie.
 6. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.

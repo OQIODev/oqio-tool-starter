@@ -25,6 +25,8 @@ Cette chaîne est comparée **caractère par caractère** par le Stop hook de `r
 
 Ne l'écrire que si c'est littéralement vrai. Jamais pour sortir d'une boucle où on se sent bloqué. Une réserve ou une ligne de « Capté en passant » n'est pas une tranche : le backlog peut être vide alors que le fichier ne l'est pas.
 
+Une tranche qui porte une **marque d'abandon** (`⚠ Abandonné le …`) n'est pas prenable : une itération précédente s'y est cassée les dents. Ne pas la reprendre — c'est le seul garde-fou contre une boucle qui retente indéfiniment le même échec, chaque tour croyant démarrer proprement. La traiter comme les tranches ci-dessous : passer à la suivante en le disant, et si aucune n'est prenable, émettre le signal d'arrêt.
+
 Si la tranche demande une action hors dépôt — un clic dans une console, un secret à poser, un arbitrage — ne rien implémenter : décrire exactement le geste attendu, puis passer à la première tranche implémentable en le disant. Ces tranches restent dans le fichier ; ce sont elles qui, sinon, finissent en réserves que personne ne voit.
 
 Et s'il n'en reste aucune d'implémentable, s'arrêter en émettant le même signal, après avoir listé les gestes attendus. Il n'annonce pas que tout est livré : il dit qu'il n'y a plus rien à prendre sans intervention. Sans lui, la boucle reprendrait la même tranche et redirait la même chose à chaque tour.
@@ -47,9 +49,9 @@ C'est une porte, pas un conseil : si tu te surprends à écrire l'implémentatio
 
 Respecter « un seul chemin pour chaque chose » (CLAUDE.md). Ne pas introduire de dépendance nouvelle sans le dire explicitement dans le compte rendu. Si la tranche fait apparaître un mot de domaine qui n'est pas dans `CONTEXT.md`, l'y ajouter avec sa définition et ses synonymes interdits.
 
-**Si la tranche touche à l'écran**, lire d'abord la ligne de direction visuelle dans `DECISIONS.md` — elle sort de `/cadrage`. Puis charger `frontend-design` pour coder l'interface, en lui donnant cette direction comme contrainte : il exécute un parti pris déjà tranché, il n'en propose pas un autre. Ne pas rejouer le choix même s'il en suggère un meilleur — il retire un parti pris neuf à chaque génération, et deux tranches d'affilée ne doivent pas produire deux apparences.
+**Si la tranche touche à l'écran**, charger `/ecran`. Il lit lui-même la direction visuelle de `DECISIONS.md` et l'exécute — il n'en propose pas une autre, et c'est tout l'intérêt : deux tranches d'affilée ne doivent pas produire deux apparences. Ne pas rejouer le choix, même si une meilleure idée se présente en chemin ; elle va dans « Capté en passant ».
 
-Cas particulier : la ligne dit `À TRANCHER`, ou il n'y en a pas (cadrage sauté, projet antérieur à cette règle). Alors c'est cette tranche qui tranche — laisser `frontend-design` décider, écrire la ligne dans `DECISIONS.md`, poser les valeurs dans `src/app/globals.css`, et **le dire dans le compte rendu**. C'est une décision que l'utilisateur doit pouvoir contester tout de suite, pas trois tranches plus tard.
+Si la ligne dit `À TRANCHER` ou n'existe pas, `/ecran` tranche, une seule fois et pour tout le projet, puis l'écrit. Reprendre son compte rendu dans le tien : c'est une décision que l'utilisateur doit pouvoir contester tout de suite, pas trois tranches plus tard.
 
 **Fini quand** : `npm run verify` passe, et chaque comportement testable en unitaire a un test qu'on a vu échouer avant de le voir passer.
 
@@ -57,7 +59,17 @@ Cas particulier : la ligne dit `À TRANCHER`, ou il n'y en a pas (cadrage sauté
 
 Suivre `/verify` : les checks automatiques, puis l'app lancée pour de vrai et le critère constaté par un sous-agent en contexte frais. Aucune tranche n'est finie parce que le code compile.
 
-Si ça ne passe pas : corriger et re-vérifier. **Au deuxième échec sur le même symptôme**, ne pas tenter une troisième correction — charger `/debug`. Deux correctifs qui ratent au même endroit veulent dire qu'on ne sait pas encore pourquoi ça casse, et le troisième est un coup de dés. Si `/debug` rend la main sans cause trouvée, s'arrêter et rendre compte de ce qui bloque plutôt que d'empiler des tentatives.
+Si ça ne passe pas : corriger et re-vérifier. **Au deuxième échec sur le même symptôme**, ne pas tenter une troisième correction — charger `/debug`. Deux correctifs qui ratent au même endroit veulent dire qu'on ne sait pas encore pourquoi ça casse, et le troisième est un coup de dés. Si `/debug` rend la main sans cause trouvée, s'arrêter là.
+
+Et avant de rendre la main, **écrire la marque d'abandon sur la tranche** dans `BACKLOG.md` — une ligne sous son critère :
+
+```
+  - ⚠ Abandonné le AAAA-MM-JJ — <le symptôme exact> ; <ce que /debug a éliminé>
+```
+
+C'est ce qui empêche la boucle de reprendre la même tranche au tour suivant. Sans cette marque, l'itération suivante relit un backlog inchangé, ne sait rien de l'échec, et refait exactement la même chose. Le seul fichier qui garde la mémoire d'une boucle, c'est `BACKLOG.md` : un échec qui n'y est pas écrit n'a pas eu lieu.
+
+La marque se retire à la main, quand l'utilisateur a tranché ce qui bloquait.
 
 **Fini quand** : un verdict `CONSTATÉ` a été rendu sur le critère recopié à l'étape 1, par quelqu'un qui n'a pas écrit le code. « Ça devrait marcher » n'est pas un verdict, un build vert non plus.
 
@@ -67,7 +79,7 @@ Le tout dans **un seul commit**.
 
 - **Retirer la tranche de `BACKLOG.md`** — pas la cocher, la supprimer
 - Le constat de vérification dans `JOURNAL.md`, et là seulement
-- Une ligne dans « Réserves » si c'est livré sans être prouvé, avec le fait qui la lèverait
+- Une ligne dans « Réserves » si c'est livré sans être prouvé, avec le fait qui la lèverait — une **réserve** porte sur du code livré, une **marque d'abandon** sur une tranche qui ne l'est pas ; ne pas confondre les deux
 - Une ligne dans « Capté en passant » pour ce qui a surgi et n'appartenait pas à la tranche
 - Une ligne dans `DECISIONS.md` si un choix technique non évident a été fait
 - Un commit `type(scope): description` dont le corps porte le constat

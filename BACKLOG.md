@@ -15,6 +15,16 @@
 - [ ] **T3 — [titre]**
   - Vérif :
 
+Une tranche sur laquelle une itération s'est cassée les dents porte une marque, écrite par `/slice` :
+
+```
+- [ ] **T2 — [titre]**
+  - Vérif : [...]
+  - ⚠ Abandonné le 2026-09-05 — [symptôme exact] ; [ce que /debug a éliminé]
+```
+
+Elle n'est plus prenable tant que la marque est là — c'est ce qui empêche une boucle de retenter le même échec à chaque tour. On la retire à la main, quand on a tranché ce qui bloquait.
+
 ## Réserves
 Ce qui est livré mais pas prouvé. Une ligne : ce qui n'est pas établi, et **le fait qui la lèverait**.
 

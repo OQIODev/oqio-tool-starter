@@ -6,15 +6,16 @@ C'est le setup qu'on utilise chez [OQIO](https://oqio.ch) pour sortir nos outils
 
 ## La boucle
 
-Quatre skills, dans `.claude/skills/`, courtes — de l'ordre de quatre-vingts à cent lignes chacune. Trois portent la boucle, la quatrième est un secours.
+Cinq skills, dans `.claude/skills/`, courtes — de l'ordre de quatre-vingts à cent lignes chacune. Trois portent la boucle, deux s'enclenchent seules quand il faut.
 
-`/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify` et `/debug` restent invocables par l'agent, parce que `/slice` les appelle — une skill user-invoked peut en appeler une model-invocable, jamais une autre user-invoked.
+`/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify`, `/ecran` et `/debug` restent invocables par l'agent, parce que `/slice` les appelle — une skill user-invoked peut en appeler une model-invocable, jamais une autre user-invoked.
 
 | Skill | Quand | Ce qu'il fait |
 |---|---|---|
 | `/cadrage` | Une fois, au début | Idée → `SPEC.md` court, `BACKLOG.md` de tranches verticales, `CONTEXT.md` du vocabulaire |
 | `/slice` | À répétition | Livre une tranche de bout en bout : plan, test, code, vérif, commit |
 | `/verify` | Avant de clore | Checks automatiques **et** parcours réel dans l'app qui tourne |
+| `/ecran` | Dès qu'une tranche touche à l'interface | Exécute la direction visuelle tranchée au cadrage, sans en proposer une autre |
 | `/debug` | Quand une correction a raté | Construit une commande qui passe au **rouge**, puis réduit, hypothétise, verrouille |
 
 Quatre choses les rendent différentes d'un prompt bien tourné.
@@ -47,21 +48,17 @@ Puis, dans Claude Code : `/cadrage` pour poser `SPEC.md`, `BACKLOG.md` et `CONTE
 
 ### Prérequis
 
-Les quatre skills sont dans le dépôt et n'ont rien à installer. Il reste **un** plugin à ajouter, et un second qui est optionnel :
+**Aucun.** Les cinq skills sont dans le dépôt, elles n'ont rien à installer et rien à mettre à jour. Le starter se clone et fonctionne.
 
-```bash
-claude plugin install frontend-design@claude-plugins-official
-```
+C'est délibéré. Un plugin de design, on l'a essayé : il est écrit pour proposer une direction neuve à chaque génération — l'un d'eux ordonne littéralement de ne jamais converger d'une fois sur l'autre. Sur un backlog de six tranches, c'est l'inverse de ce qu'on veut, et on passait notre temps à neutraliser sa consigne principale. `/ecran` fait le travail dans le bon sens : il exécute la direction tranchée au cadrage.
 
-`/slice` le charge dès qu'une tranche touche à l'écran, en lui passant la direction visuelle de `DECISIONS.md` comme contrainte. Sans lui, cette moitié de l'étape 3 tombe.
+En particulier **pas** de `superpowers` : ses skills recouvrent cette boucle case pour case et son hook `SessionStart` gagne systématiquement contre `/cadrage` (`.claude/settings.json` le désactive explicitement, voir `DECISIONS.md`).
+
+Un seul plugin reste utile, et il est optionnel : `ralph-loop`, pour lancer la boucle sans surveillance depuis un **terminal**. Son Stop hook compare `<promise>BACKLOG VIDE</promise>` à la chaîne attendue, caractère par caractère, et plafonne les tours avec `--max-iterations` : l'arrêt est vérifié hors du modèle. `/loop /slice` boucle aussi, partout, mais s'y arrête quand le modèle *décide* qu'il a fini.
 
 ```bash
 claude plugin install ralph-loop@claude-plugins-official
 ```
-
-Optionnel mais **pas remplaçable**, et **terminal uniquement** : il fonctionne par un Stop hook, qui n'existe pas dans l'app. C'est ce hook qui fait sa valeur — il compare le contenu de `<promise>…</promise>` à la chaîne attendue, caractère par caractère, dans un script bash, et plafonne les tours avec `--max-iterations`. L'arrêt est donc vérifié **hors du modèle**. `/loop /slice` boucle aussi, mais s'y arrête quand le modèle *décide* qu'il a fini, sans contrôle externe. Pour une boucle lancée avant d'aller dormir, ce n'est pas le même contrat.
-
-Rien d'autre. En particulier **pas** de `superpowers` : ses skills recouvrent cette boucle case pour case et son hook `SessionStart` gagne systématiquement contre `/cadrage` (`.claude/settings.json` le désactive explicitement, voir `DECISIONS.md`).
 
 ## Ce qui est tranché — et à quel prix
 
