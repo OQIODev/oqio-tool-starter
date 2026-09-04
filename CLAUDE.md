@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 ## L'outil
-Voir [SPEC.md](SPEC.md) pour ce qu'on construit et [BACKLOG.md](BACKLOG.md) pour les tranches restantes. Si SPEC.md est encore le template vide, lancer `/cadrage` avant d'écrire du code.
+Voir [SPEC.md](SPEC.md) pour ce qu'on construit, [CONTEXT.md](CONTEXT.md) pour le vocabulaire du domaine et [BACKLOG.md](BACKLOG.md) pour les tranches restantes. Si SPEC.md est encore le template vide, lancer `/cadrage` avant d'écrire du code.
 
 Routine de travail et choix des skills : [WORKFLOW.md](WORKFLOW.md).
 
@@ -55,6 +55,8 @@ Tout ce qui porte `test` tourne en une passe et rend la main. `test:watch` est l
 - Une tranche = un commit. Format : `type(scope): description` (feat, fix, refactor, chore, docs, test). Son corps porte le constat de vérification.
 - Ne jamais déclarer une tranche finie sans l'avoir vue tourner — voir `/verify`.
 - Décision technique non évidente → une ligne dans [DECISIONS.md](DECISIONS.md).
+- Le vocabulaire du domaine vit dans [CONTEXT.md](CONTEXT.md). Un terme qui apparaît y entre avec sa définition et les synonymes à ne pas employer ; variables, fonctions et fichiers s'y conforment. Deux mots pour la même chose, c'est du code qui divergera.
+- [SPEC.md](SPEC.md) ne se modifie plus après le cadrage — seule sa section « À trancher » rétrécit. Ce qui change en route va dans DECISIONS.md.
 - Direction visuelle tranchée **une fois** : au cadrage si le projet en sort, sinon à la première tranche d'interface, qui doit alors le signaler dans son compte rendu. Une ligne dans [DECISIONS.md](DECISIONS.md), les valeurs dans `globals.css`. Les tranches suivantes s'y conforment, elles ne la rejouent pas.
 - Élément hors périmètre de la tranche en cours → l'écrire dans BACKLOG.md, ne pas le traiter maintenant.
 - [BACKLOG.md](BACKLOG.md) ne peut que rétrécir : une tranche livrée en sort, elle ne se coche pas. Ce qui est fait vit dans `git log`.

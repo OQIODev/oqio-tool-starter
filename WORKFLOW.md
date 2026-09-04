@@ -1,6 +1,6 @@
 # WORKFLOW — quel skill, quand
 
-Aide-mémoire. Si tu ne sais pas quoi lancer, la réponse est presque toujours dans le parcours ci-dessous.
+Aide-mémoire. Si tu ne sais pas quoi lancer, la réponse est dans le parcours ci-dessous.
 
 ## La règle en une phrase
 
@@ -8,9 +8,11 @@ Aide-mémoire. Si tu ne sais pas quoi lancer, la réponse est presque toujours d
 
 Trois skills suffisent pour 95 % du travail : `/cadrage`, `/slice`, `/verify`. Le reste est du confort.
 
+Ce sont des **commandes** : tu les tapes, il se passe quelque chose. Elles ne se déclenchent pas seules — c'est délibéré, voir `DECISIONS.md` au 2026-09-04. Seul `/verify` reste invocable par l'agent, parce que `/slice` l'appelle.
+
 ---
 
-## Le parcours complet d'un outil
+## Le parcours
 
 ### 0. Créer le projet
 
@@ -23,13 +25,13 @@ docker compose up -d
 npx prisma migrate deploy
 ```
 
-Pense à remplacer le `name` dans `package.json`, et à vider `DECISIONS.md` des lignes héritées du starter.
+Remplace le `name` dans `package.json`, et vide `DECISIONS.md` des lignes héritées du starter.
 
-> Chez nous cette étape est une skill `/nouvel-outil` qui fait tout ça d'un coup. Elle n'est pas dans le repo : elle est câblée sur des chemins locaux, elle ne servirait à personne d'autre. Les commandes ci-dessus font le même travail.
+> Chez nous cette étape est une skill `/nouvel-outil`, câblée sur des chemins locaux — elle n'est pas dans le repo. Les commandes ci-dessus font le même travail, plus l'attribution des ports.
 
-La migration des tables auth est déjà dans le starter — pas besoin d'en créer une. `migrate dev` ne sert que quand tu modifies `schema.prisma`.
+La migration des tables auth est déjà là. `migrate dev` ne sert que quand tu modifies `schema.prisma`.
 
-Ouvre ensuite une session Claude Code **dans ce dossier**. Tout le reste s'y passe.
+Ouvre ensuite une session Claude Code **dans ce dossier**.
 
 ### 1. Cadrer — une seule fois
 
@@ -37,15 +39,18 @@ Ouvre ensuite une session Claude Code **dans ce dossier**. Tout le reste s'y pas
 /cadrage
 ```
 
-40 minutes de dialogue, une question à la fois. En sortie : `SPEC.md` (1-2 pages), `BACKLOG.md` (3 à 7 tranches), et **la direction visuelle de l'outil** — une ligne dans `DECISIONS.md`, les valeurs dans `globals.css`.
+30 à 45 minutes, conduites par **rounds** : il pose d'un coup toutes les questions dont les prérequis sont tranchés, numérotées, chacune avec la réponse qu'il recommande. Tu réponds en un message — corriger une recommandation coûte moins que de produire une réponse à froid. Les faits qu'il peut aller chercher, il les cherche : il ne te demande pas ce qu'un sous-agent peut lire.
 
-C'est le seul moment du projet où on parle d'apparence, et ça tient en trois questions : ce que l'outil doit dégager, une référence que tu aimes ou que tu refuses, clair/sombre et dense/aéré. Après, c'est écrit et tout s'y conforme. Si tu réponds vague, il écrit `À TRANCHER` plutôt que d'inventer.
+En sortie : `SPEC.md` (1-2 pages), `BACKLOG.md` (3 à 7 tranches), `CONTEXT.md` (le vocabulaire), et **la direction visuelle** — une ligne dans `DECISIONS.md`, les valeurs dans `globals.css`.
 
-Sur la référence, il va insister pour que tu la **nommes** — un produit, un site, un objet précis. Elle sert deux fois : à générer l'interface, puis à la juger en `/verify`. « Quelque chose de sobre » ne peut pas servir de barre.
+Deux questions portent tout le reste :
 
-La question qui compte : **à quoi tu verras que ça marche ?** Si tu ne sais pas y répondre, l'outil n'est pas prêt à être construit. Le skill insistera.
+- **« À quoi tu verras que ça marche ? »** Si tu ne sais pas y répondre, l'outil n'est pas prêt à être construit.
+- **La référence visuelle, nommée.** Un produit, un site, un objet précis, aimé ou refusé. Elle sert deux fois : à générer l'interface, puis à la juger en `/verify`. « Quelque chose de sobre » ne peut pas servir de barre.
 
-Ne saute pas cette étape en te disant que tu as l'idée en tête. Ce n'est pas pour toi que la spec est écrite, c'est pour l'agent — et pour toi dans trois semaines.
+Il s'arrête quand plus aucune question n'est ouverte, pas quand le temps est écoulé. Si tu réponds vague, il écrit `À TRANCHER` plutôt que d'inventer.
+
+`SPEC.md` ne bouge plus après ça. Ce qui change en route va dans `DECISIONS.md` ; le vocabulaire, lui, grossit dans `CONTEXT.md` au fil des tranches.
 
 ### 2. Construire — en boucle
 
@@ -53,42 +58,27 @@ Ne saute pas cette étape en te disant que tu as l'idée en tête. Ce n'est pas 
 /slice
 ```
 
-Une tranche, de bout en bout : plan, test, code, vérification, commit. Puis tu relances. Et encore.
+Une tranche de bout en bout : plan, test, code, vérification, commit. Chaque étape porte sa condition de fin — c'est ce qui empêche une tranche « à peu près finie ». L'étape test est une porte : pas de test rouge vu échouer, pas d'implémentation du comportement.
 
-Quand tu veux que ça enchaîne sans toi :
+Pour enchaîner sans toi :
 
 ```
 /loop /slice
 ```
 
-Natif, marche partout (app comme terminal). Sans intervalle, il s'auto-régule : il relance `/slice` quand le précédent a fini.
+Natif, marche partout. Sans intervalle, il relance `/slice` quand le précédent a fini.
 
-**`ralph-loop` ne marche que dans le terminal `claude`**, pas dans l'app — il fonctionne par un Stop hook qui intercepte la fin de session. Si tu es en terminal et que tu le veux :
+En terminal uniquement, avec critère d'arrêt strict :
 
 ```
 /ralph-loop /slice --completion-promise "BACKLOG VIDE" --max-iterations 6
 ```
 
-La promesse doit être émise par `/slice` sous la forme `<promise>BACKLOG VIDE</promise>` — c'est déjà le cas, ne change pas cette chaîne d'un côté sans l'autre.
+Mets toujours `--max-iterations` : le nombre de tranches restantes plus deux, jamais 50. Et **fais la première tranche à la main** — c'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle, pas après six itérations.
 
-À lancer quand le backlog est net et que tu vas faire autre chose. Mets toujours `--max-iterations` : à peu près le nombre de tranches restantes plus deux, jamais 50.
+Deux choses à savoir avant de boucler, détaillées dans `DECISIONS.md` : ralph réinjecte le prompt dans la **même** session (le contexte accumule), et c'est `BACKLOG.md` qui porte la mémoire de la boucle. Donc : jamais de boucle sur un backlog vide, jamais de boucle sur une consigne vague du type « construis l'outil ».
 
-**Ce que boucle ralph, et ce qu'il oublie.** Il renvoie le *même prompt* à chaque tour, et une itération = un `/slice` = une tranche : il n'essaie pas de tout faire d'un coup.
-
-Attention en revanche à une idée fausse qu'on a nous-mêmes propagée ici : le plugin ne repart **pas** d'un contexte neuf. Son hook rend `{"decision":"block","reason":<prompt>}`, ce qui empêche la session de se terminer et réinjecte le prompt **dans la même session** — l'historique persiste donc jusqu'à la compaction. C'est le Ralph original de Huntley qui relance un process vierge, pas celui-là. Conséquence pratique : le contexte accumule **et** les fichiers sont relus à chaque tour, donc un backlog qui grossit se paie deux fois.
-
-C'est pour ça que `/slice` **retire** la tranche de `BACKLOG.md` avant de rendre la main — **le backlog est la mémoire de la boucle.** L'itération suivante lit le fichier et voit ce qui reste : elle n'a rien à trier entre fait et pas fait, ce qui est écrit est à faire.
-
-Deux conséquences :
-
-- **Au début d'un projet, ralph ne sert à rien.** Backlog vide → `/slice` répond `BACKLOG VIDE` → la boucle s'arrête aussitôt. Fais `/cadrage` d'abord.
-- **Ne boucle jamais sur une consigne vague** du type `/ralph-loop "construis l'outil"`. Sans backlog pour porter l'état, il redécide tout à chaque tour et tu récoltes des réécritures.
-
-Et fais **la première tranche à la main**. C'est là qu'on voit si le découpage était juste. Si elle dérape, corrige le backlog avant de lancer la boucle — pas après six itérations.
-
-**Aucune tranche ne décide de l'apparence** — la direction est tranchée au cadrage. Dès que la tranche touche à l'écran, `/slice` lit la ligne de `DECISIONS.md` et charge `frontend-design` avec, comme contrainte. Tu n'as rien à taper.
-
-Ce que ce skill ne sait pas faire, c'est se souvenir : il retire un parti pris neuf à chaque génération. C'est `DECISIONS.md` qui porte la mémoire, exactement comme `BACKLOG.md` porte celle de la boucle. Si la ligne dit `À TRANCHER`, la tranche décide à sa place et **le dit dans son compte rendu** — c'est là que tu contestes, pas trois tranches plus tard.
+**Aucune tranche ne décide de l'apparence** — la direction est tranchée au cadrage, `/slice` la lit et contraint `frontend-design` avec. Tu n'as rien à taper. Si la ligne dit `À TRANCHER`, la tranche décide et **le dit dans son compte rendu** : c'est là que tu contestes.
 
 ### 3. Vérifier — avant de dire que c'est fini
 
@@ -96,17 +86,13 @@ Ce que ce skill ne sait pas faire, c'est se souvenir : il retire un parti pris n
 /verify
 ```
 
-`/slice` l'appelle déjà tout seul. Tu le lances à la main quand tu doutes, ou après avoir bricolé quelque chose toi-même.
+`/slice` l'appelle déjà. Tu le lances à la main quand tu doutes, ou après avoir bricolé quelque chose toi-même.
 
-Ce que ça fait : `npm run verify` (lint + types + tests), **puis** l'app lancée pour de vrai et le parcours constaté. Un build vert ne prouve rien.
+Il épingle d'abord ce qu'il vérifie (le critère recopié mot pour mot, le diff), passe `npm run verify`, puis lance l'app pour de vrai. **Ce n'est pas celui qui a écrit le code qui constate** : le parcours part dans un sous-agent en contexte frais, qui reçoit le critère et rien d'autre — pas le diff, pas le plan. Il rend un verdict : constaté, infirmé, ou pas pu constater. Si c'est infirmé, la correction est jugée par un sous-agent **neuf**.
 
-**Ce n'est pas celui qui a écrit le code qui constate.** Le parcours part dans un sous-agent en contexte frais, qui reçoit le critère de vérification de la tranche et rien d'autre — pas le diff, pas le plan, pas le compte rendu. Il lance l'app, regarde, et rend un verdict : constaté, infirmé, ou pas pu constater. C'est délibéré : un agent qui vient d'écrire le code ne regarde pas l'écran, il reconnaît son intention. Et si le verdict est « infirmé », la correction est jugée par un sous-agent **neuf** — celui qui a vu la version cassée validerait la reprise sur parole.
+Il rend trois constats **séparés** : le parcours, l'utilisabilité (a11y, clavier, contraste, en `fichier:ligne`), et la tenue face à la référence nommée. Pas de verdict global — un parcours qui aboutit ne prouve pas que ce soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne.
 
-Il a une troisième étape quand la tranche a touché à l'écran, et elle contrôle deux choses différentes. L'utilisabilité, avec le code sous les yeux : `web-design-guidelines` — accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`, en `fichier:ligne`. Puis la tenue, sans le code : le sous-agent compare ce qui est à l'écran à la **référence nommée** dans `DECISIONS.md`, celle que `/cadrage` t'a arrachée. Une interface jugée contre les seuls critères qu'on s'est écrits les passe toujours ; il faut une référence qui existe pour de vrai. Là non plus tu n'as rien à taper, c'est dans son `SKILL.md`.
-
-Un parcours qui aboutit ne prouve pas qu'il soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne.
-
-Pour la lancer seule, sur du code que tu as bricolé à la main :
+Pour la relecture d'interface seule, sur du code bricolé à la main :
 
 ```
 /web-design-guidelines src/app/**/*.tsx
@@ -125,45 +111,17 @@ Pour la lancer seule, sur du code que tu as bricolé à la main :
 Rien d'automatisé, c'est volontaire — deux presets, même code :
 
 - **quick** : pousser sur Vercel, y mettre `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`
-- **durable** : Coolify sur Hetzner construit le `Dockerfile`, Postgres à côté. Les migrations partent au démarrage du conteneur, il n'y a rien à lancer à la main
+- **durable** : Coolify sur Hetzner construit le `Dockerfile`, Postgres à côté. Les migrations partent au démarrage du conteneur
 
 ---
 
-## Superpowers — tu ne l'appelles pas
+## superpowers est coupé
 
-Deux natures de skills, à ne pas confondre :
+`.claude/settings.json` le désactive pour ce projet, et il est coupé globalement dans les settings user.
 
-- **Les tiens** (`/cadrage`, `/slice`, `/verify`) sont des **commandes**. Tu les tapes, il se passe quelque chose.
-- **Ceux de superpowers** sont des **réflexes**. Leur description dit « Use when… » — Claude les charge tout seul au moment concerné. Il n'y a rien à taper, et c'est pour ça qu'ils n'apparaissent pas comme des étapes du parcours.
+Ses 14 skills recouvraient notre chaîne case pour case (`brainstorming`↔`/cadrage`, `writing-plans` + `test-driven-development`↔`/slice`, `verification-before-completion`↔`/verify`), et son hook `SessionStart` ordonnait d'invoquer une skill avant toute réponse. Deux méthodologies pour le même travail, dont une qui gagnait toujours.
 
-Où ils se réveillent, sans que tu demandes :
-
-| Moment | Skill qui s'active |
-|---|---|
-| Tu décris une feature ou une idée | `brainstorming` |
-| Il y a une spec et il faut un plan | `writing-plans` |
-| L'implémentation commence | `test-driven-development` |
-| Un test casse, un comportement surprend | `systematic-debugging` |
-| Il s'apprête à dire « c'est fini » | `verification-before-completion` |
-| Une tranche se termine | `requesting-code-review` |
-| Travail parallèle sur plusieurs fichiers | `using-git-worktrees`, `subagent-driven-development` |
-| Fin de branche, merge ou PR | `finishing-a-development-branch` |
-
-`frontend-design` et `web-design-guidelines` sont d'une troisième nature : ce sont bien des réflexes, mais on ne compte pas sur le hasard pour qu'ils se réveillent — `/slice` et `/verify` les nomment explicitement dans leur `SKILL.md`. Rien à taper, et cette fois c'est garanti.
-
-Tu peux forcer l'un d'eux à la main si tu veux, avec son nom complet :
-
-```
-/superpowers:brainstorming
-```
-
-```
-/superpowers:systematic-debugging
-```
-
-**Le recouvrement, en clair.** Cette liste se superpose presque case pour case à `/slice` (plan → TDD → vérif → review) et à `/verify` (`verification-before-completion` fait le même travail). Ce n'est pas un autre moment du workflow, c'est la même zone couverte deux fois.
-
-Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. `/cadrage` reste à toi dans tous les cas — il porte ta façon de cadrer et le vocabulaire OQIO, ce que `brainstorming` ne connaît pas.
+Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/settings.json`. Ce qu'il faisait d'orthogonal (worktrees, sous-agents parallèles) est couvert par les outils natifs.
 
 ---
 
@@ -175,13 +133,11 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 | Transformer une idée en spec | `/cadrage` |
 | Avancer sur le projet, sans plus de précision | `/slice` |
 | Développer plusieurs tranches sans surveiller | `/loop /slice` |
-| Idem, en terminal, avec un critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
+| Idem, en terminal, avec critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
 | Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
 | Savoir si l'interface tient (a11y, clavier, contraste) | `/web-design-guidelines` |
 | Voir l'app tourner | `/run` |
-| Explorer une idée sans rien construire | `/superpowers:brainstorming` |
-| Débugger un truc qui résiste | `/superpowers:systematic-debugging` |
 | Nettoyer sans changer le comportement | `/simplify` |
 | Relire avant merge | `/code-review` |
 | Une idée hors sujet surgit | Rien — l'écrire dans `BACKLOG.md`, section « Capté en passant » |
@@ -190,38 +146,27 @@ Donc : lance une tranche, observe qui prend la main, et garde un seul des deux. 
 
 ## Quand ça déraille
 
-**L'agent part dans tous les sens** → le backlog est trop grossier. Retour à `BACKLOG.md`, découpe la tranche en deux.
+**L'agent part dans tous les sens** → le backlog est trop grossier. Découpe la tranche en deux.
 
-**Il déclare fini quelque chose qui ne marche pas** → tu as sauté `/verify`, ou le critère de vérification de la tranche n'était pas observable. Réécris le critère en quelque chose qu'on constate.
+**Il déclare fini quelque chose qui ne marche pas** → tu as sauté `/verify`, ou le critère n'était pas observable. Réécris le critère en quelque chose qu'on constate.
 
-**Il réécrit du code qui marchait** → `CLAUDE.md` n'a pas été lu ou est contredit. Vérifie qu'il n'y a pas deux façons de faire la même chose dans le projet.
+**Il réécrit du code qui marchait** → `CLAUDE.md` n'a pas été lu ou est contredit. Vérifie qu'il n'y a pas deux façons de faire la même chose.
+
+**Il emploie trois mots pour la même chose** → `CONTEXT.md` est vide ou incomplet. Le terme manquant y va, avec ses synonymes interdits.
 
 **Une boucle tourne dans le vide** → arrête-la. Le backlog est soit vide, soit mal écrit.
 
-**Tu ne sais plus où en est le projet** → `BACKLOG.md` dit ce qui reste, `git log --oneline` ce qui est fait, `JOURNAL.md` ce qu'on a vu tourner. Pour retrouver une tranche livrée avec son critère, telle qu'elle était écrite : `git log -p -- BACKLOG.md`.
+**Tu ne sais plus où en est le projet** → `BACKLOG.md` dit ce qui reste, `git log --oneline` ce qui est fait, `JOURNAL.md` ce qu'on a vu tourner. Pour retrouver une tranche livrée avec son critère : `git log -p -- BACKLOG.md`.
 
-**Tu ne sais plus ce qui est vraiment prouvé** → la section « Réserves » du backlog. C'est ce qui est livré sans avoir été constaté, et c'est le seul endroit qui le dit.
+**Tu ne sais plus ce qui est vraiment prouvé** → la section « Réserves » du backlog. C'est le seul endroit qui dit ce qui est livré sans avoir été constaté.
 
 ---
 
 ## Les pièges
 
-1. **Ne cumule pas deux méthodologies.** Si tu installes `superpowers`, ses `writing-plans` / `executing-plans` / `test-driven-development` recouvrent `/slice`. Garde-en un.
-2. **Ne collectionne pas les skills.** Chaque skill est du contexte à charger et une façon de faire de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
-3. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.
-4. **Ne laisse pas la spec grossir.** Si `SPEC.md` dépasse deux pages, c'est que des décisions d'implémentation y ont glissé. Elles vont dans `DECISIONS.md`, ou nulle part.
-5. **Ne laisse rien s'accumuler dans `BACKLOG.md`.** C'est le seul fichier que chaque itération relit en entier. Un backlog qui garde ses tranches faites et leurs constats devient illisible bien avant d'être gros — et l'agent **imite le format qu'il y trouve**, donc ça empire tout seul, sans que personne l'ait demandé. Mesuré sur un vrai projet : 176 Ko en huit jours, dont 91 % de récit, et un `Read` qui ne servait plus qu'un tiers du fichier. Ce qui est fait sort du fichier.
-6. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération — c'est son métier, et c'est un problème sur un backlog de six tranches. Sans la ligne de `DECISIONS.md` pour le contraindre, la tranche 5 ne ressemblera pas à la tranche 2, et tu ne le verras qu'à la fin.
-
----
-
-## Commandes shell utiles
-
-```bash
-npm run dev              # Dev sur le port 3000
-npm run verify           # lint + types + tests — avant tout commit
-npm run build            # Build production
-docker compose up -d     # Postgres local
-npx prisma migrate dev   # Nouvelle migration
-npx prisma studio        # Voir la base
-```
+1. **Ne cumule pas deux méthodologies.** C'est le piège dans lequel on est tombé pendant un mois. Voir la section superpowers.
+2. **Ne collectionne pas les skills.** Chaque skill model-invocable est du contexte permanent et un concurrent de plus. Cinq skills que tu maîtrises battent trente que tu ne lances jamais.
+3. **Ne laisse rien s'accumuler dans `BACKLOG.md`.** C'est le seul fichier que chaque itération relit en entier, et l'agent imite le format qu'il y trouve. Mesure et raison dans `DECISIONS.md`.
+4. **Ne laisse pas la spec grossir — ni bouger.** Si `SPEC.md` dépasse deux pages, des décisions d'implémentation y ont glissé : elles vont dans `DECISIONS.md`. Et une fois le cadrage fini, elle ne se modifie plus.
+5. **Ne saute pas les trois questions d'apparence du cadrage.** `frontend-design` retire un parti pris neuf à chaque génération. Sans la ligne de `DECISIONS.md`, la tranche 5 ne ressemblera pas à la tranche 2, et tu le verras à la fin.
+6. **Ne teste pas une techno nouvelle dans un vrai projet.** Bac à sable séparé. Le starter n'absorbe que ce qui a survécu.

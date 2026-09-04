@@ -6,11 +6,11 @@ C'est le setup qu'on utilise chez [OQIO](https://oqio.ch) pour sortir nos outils
 
 ## La boucle
 
-Trois skills, dans `.claude/skills/`. Elles font une soixantaine de lignes chacune. Claude Code les charge automatiquement quand tu ouvres le dossier.
+Trois skills, dans `.claude/skills/`. Entre 80 et 95 lignes chacune. `/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify` seul reste invocable par l'agent, parce que `/slice` l'appelle.
 
 | Skill | Quand | Ce qu'il fait |
 |---|---|---|
-| `/cadrage` | Une fois, au début | Idée → `SPEC.md` court + `BACKLOG.md` de tranches verticales |
+| `/cadrage` | Une fois, au début | Idée → `SPEC.md` court, `BACKLOG.md` de tranches verticales, `CONTEXT.md` du vocabulaire |
 | `/slice` | À répétition | Livre une tranche de bout en bout : plan, test, code, vérif, commit |
 | `/verify` | Avant de clore | Checks automatiques **et** parcours réel dans l'app qui tourne |
 
@@ -18,7 +18,7 @@ Quatre choses les rendent différentes d'un prompt bien tourné.
 
 **Le juge est aveugle.** Celui qui a écrit le code ne constate pas son propre critère — il reconnaît son intention au lieu de regarder l'écran. `/verify` confie donc le parcours à un sous-agent en contexte frais, qui lance l'app, pilote le navigateur, et à qui il est **interdit** de lire le diff, le dernier commit ou le compte rendu. Il constate ce qui est à l'écran, pas ce que le code prétend faire. Il rend `CONSTATÉ`, `INFIRMÉ` ou `PAS PU CONSTATER`. Si c'est `INFIRMÉ`, on corrige et on relance un sous-agent **neuf** — jamais celui qui a vu la version cassée, il validerait la correction sur parole.
 
-**Rien n'est fini parce que ça compile.** Un build vert ne prouve rien sur un outil. Aucune tranche ne se clôt sans avoir été vue tourner, et le compte rendu doit dire ce qui a été sauté plutôt que de le présenter comme validé.
+**Chaque étape porte sa condition de fin, et rien n'est fini parce que ça compile.** Les cinq étapes de `/slice` se terminent sur un fait vérifiable — un critère recopié, un test vu échouer, un verdict rendu — et pas sur le sentiment d'avoir fini. Un build vert ne prouve rien sur un outil. Aucune tranche ne se clôt sans avoir été vue tourner, et le compte rendu doit dire ce qui a été sauté plutôt que de le présenter comme validé.
 
 **La boucle a un critère d'arrêt.** Quand le backlog est vide, `/slice` écrit `<promise>BACKLOG VIDE</promise>` et s'arrête. C'est ce qui la rend automatisable — avec `/loop` ou le plugin `ralph-loop`, tu lances et tu reviens plus tard. La skill a `AskUserQuestion` en `disallowed-tools` justement pour ne pas se bloquer sur une question au milieu de la nuit.
 
@@ -73,10 +73,13 @@ Le déploiement est le point le plus « maison » : on héberge chez Hetzner via
 Si tu veux la boucle sans le starter — sur du Rails, du SvelteKit, du Go — elle est portable. Le couplage tient en cinq endroits :
 
 1. **[CLAUDE.md](CLAUDE.md)** — le vrai travail. Le tableau « un seul chemin pour chaque chose » et le bloc Commandes déclarent ta stack. C'est ce fichier que les skills lisent pour savoir comment tu travailles.
-2. **`.claude/skills/verify/SKILL.md:5`** — `allowed-tools` liste `npm run *`, `npx prisma *`, `docker compose *`. À remplacer par tes commandes.
-3. **`.claude/skills/verify/SKILL.md:24-26`** — préparation de l'infra avant le parcours (base qui tourne, migrations à jour) et la note sur le serveur de dev.
-4. **`.claude/skills/slice/SKILL.md:44`** et **`verify:13`** — `npm run verify` (lint + typecheck + tests unitaires). Une seule commande qui doit sortir en code 0.
-5. **`.claude/skills/cadrage/SKILL.md:22`** — la question sur le preset de déploiement.
+2. **`verify`, frontmatter** — `allowed-tools` liste `npm run *`, `npx prisma *`, `docker compose *`. À remplacer par tes commandes.
+3. **`verify`, § « Parcours réel »** — la préparation de l'infra avant le parcours (base qui tourne, migrations à jour) et la note sur le serveur de dev.
+4. **`slice`, § « Implémenter »** et **`verify`, § « Checks automatiques »** — `npm run verify` (lint + typecheck + tests unitaires). Une seule commande qui doit sortir en code 0.
+5. **`cadrage`, § « Les six axes »** — la question sur le preset de déploiement.
+6. **`verify`, § « Relecture de l'interface »** — la baseline d'utilisabilité est écrite pour du web. Sur une autre cible, c'est elle qu'il faut remplacer.
+
+Les renvois sont à des sections, pas à des numéros de ligne : un doc qui cite une ligne ment dès la première réécriture du skill.
 
 Le reste — le juge aveugle, `BACKLOG VIDE`, la règle du « vu tourner » — ne dépend d'aucune techno.
 

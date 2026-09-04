@@ -1,21 +1,30 @@
 ---
 name: verify
-description: Vérifie qu'une tranche marche vraiment — checks automatiques puis parcours réel dans l'app qui tourne. À faire avant de déclarer quoi que ce soit fini.
-when_to_use: Avant de clore une tranche ou de committer, ou quand l'utilisateur demande si ça marche.
-allowed-tools: Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Skill WebFetch Agent
+description: Vérifie qu'une tranche marche vraiment — checks automatiques puis parcours réel dans l'app qui tourne, constaté par un tiers. Use when l'utilisateur demande si ça marche, avant de clore une tranche, ou avant un commit.
+allowed-tools: Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Bash(git *) Skill WebFetch Agent
 ---
 
-Un build vert ne prouve pas qu'un outil marche. Les étapes 1 et 2 sont obligatoires ; la 3 l'est dès que la tranche a touché à l'écran.
+Un build vert ne prouve pas qu'un outil marche. Les étapes 1 à 3 sont obligatoires ; la 4 l'est dès que la tranche a touché à l'écran.
 
-## 1. Checks automatiques
+## 1. Épingler le point fixe
+
+Avant de lancer quoi que ce soit, savoir exactement ce qu'on vérifie et contre quoi :
+
+- **Le critère**, recopié **mot pour mot** depuis la tranche dans `BACKLOG.md`, plus le critère de réussite de `SPEC.md`. Pas reformulé — recopié.
+- **Le diff**, depuis le dernier commit : `git diff HEAD --stat` et `git status --porcelain`. Si le diff est vide, il n'y a rien à vérifier — le dire et s'arrêter là.
+- **La ligne de direction visuelle** de `DECISIONS.md`, si la tranche a touché à l'écran.
+
+Un point fixe qui ne résout pas, un critère absent ou un diff vide doivent échouer **ici**, pas dans un sous-agent lancé pour rien.
+
+## 2. Checks automatiques
 
 ```bash
 npm run verify
 ```
 
-Lint, typecheck et tests unitaires. Si ça échoue, corriger avant de continuer — ne pas passer à l'étape 2 avec du rouge.
+Lint, typecheck et tests unitaires. Si ça échoue, corriger avant de continuer — ne pas passer à l'étape 3 avec du rouge.
 
-## 2. Parcours réel — constaté par quelqu'un d'autre
+## 3. Parcours réel — constaté par quelqu'un d'autre
 
 Celui qui a écrit le code ne constate pas son propre critère. Il sait ce qu'il a voulu faire, et il reconnaît son intention au lieu de regarder l'écran. Le parcours est donc confié à un sous-agent en contexte frais.
 
@@ -27,13 +36,14 @@ Préparer l'infrastructure, et rien de plus :
 
 Puis lancer un sous-agent `general-purpose` dont le prompt contient :
 
-- le critère de vérification de la tranche, recopié **mot pour mot** depuis `BACKLOG.md`, et le critère de réussite de `SPEC.md`
+- le critère et le critère de réussite, tels qu'épinglés à l'étape 1
 - la consigne de lancer l'app et de piloter le navigateur lui-même, screenshot inclus
 - l'obligation de s'assurer que le serveur qu'il pilote est bien **celui de ce dossier** avant de constater quoi que ce soit — un dev server d'un autre projet sur le même port donne un faux verdict dans les deux sens, et il est aveugle au code, donc rien ne le lui signalera
 - l'interdiction de lire le diff, le dernier commit, le plan ou le compte rendu — il constate ce qu'il voit à l'écran, pas ce que le code prétend faire
 - l'interdiction de corriger quoi que ce soit : il constate, il ne répare pas
 - l'obligation de regarder les logs serveur — une page qui s'affiche avec une erreur 500 derrière n'est pas verte
 - si le parcours touche l'authentification : le faire connecté **et** déconnecté, une route protégée qui répond sans session est un bug, pas un détail
+- **si la tranche a touché à l'écran** : la ligne de direction visuelle, et la question « ce qui est à l'écran tient-il à côté de cette référence, ou à distance de celle qui est refusée ? » Il répond par un constat et ce qui cloche, pas par une proposition de direction. S'il n'y a pas de référence, ou si la ligne dit `À TRANCHER`, sauter la comparaison — ne pas s'en inventer une.
 
 Il rend un verdict et ce qu'il a vu : `CONSTATÉ` · `INFIRMÉ` + ce qui s'est passé à la place · `PAS PU CONSTATER` + ce qui a bloqué. Sans verdict, l'étape n'est pas faite — ne jamais la remplacer par « ça devrait marcher ».
 
@@ -41,21 +51,44 @@ Si le verdict est `INFIRMÉ` : corriger, puis relancer un sous-agent **neuf**. J
 
 Ne pas demander à l'utilisateur de vérifier à sa place.
 
-## 3. Relecture de l'interface
+## 4. Relecture de l'interface
 
-Seulement si la tranche a touché à l'écran — sinon passer directement à l'étape 4.
+Seulement si la tranche a touché à l'écran — sinon passer directement à l'étape 5.
 
-Deux choses distinctes, à ne pas confondre.
+Charger `web-design-guidelines` sur les fichiers modifiés par la tranche : il va chercher les règles à jour et rend ses constats en `fichier:ligne`.
 
-**L'utilisabilité, avec le code sous les yeux.** Charger `web-design-guidelines` sur les fichiers modifiés par la tranche. Il va chercher les règles à jour et rend ses constats en `fichier:ligne` : accessibilité, navigation clavier, états de formulaire, contraste, `prefers-reduced-motion`.
+**La baseline ci-dessous s'applique de toute façon**, y compris si le chargement échoue ou si le réseau est coupé. Deux règles la bordent :
 
-**La tenue, sans le code.** Une interface jugée contre les seuls critères qu'on s'est écrits les passe toujours. La ligne de direction visuelle de `DECISIONS.md` nomme une référence réelle, aimée ou refusée — c'est elle la barre. La comparaison se fait à l'étape 2, en ajoutant au prompt du sous-agent : la ligne de direction visuelle, et la question « ce qui est à l'écran tient-il à côté de cette référence, ou à distance de celle qui est refusée ? ». Il répond par un constat et ce qui cloche, pas par une proposition de direction. S'il n'y a pas de référence, ou si la ligne dit `À TRANCHER`, sauter la comparaison — ne pas s'en inventer une.
+- **Le projet l'emporte.** Une convention écrite dans `CLAUDE.md` ou `DECISIONS.md` gagne contre la baseline ; ce qu'ESLint impose déjà n'est pas à re-signaler.
+- **C'est un jugement, jamais une violation dure.** On signale « cible tactile probablement trop petite », pas « erreur ».
 
-Un parcours qui aboutit ne prouve pas qu'il soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne. Corriger ce qui est constaté et dans le périmètre de la tranche ; écrire le reste dans `BACKLOG.md`, section « Capté en passant ». Ne rien passer en silence.
+Chaque point se lit *ce que c'est* → *comment corriger* :
+
+- **Cible tactile minuscule** : zone cliquable sous 24 px → l'agrandir, 44 px si l'outil sert sur mobile.
+- **Focus invisible** : `outline: none` sans remplacement, ou anneau de focus absent → un état de focus visible sur tout ce qui est atteignable au clavier.
+- **Piège au clavier** : modale ou menu qui ne se ferme pas à Échap, ou qui ne rend pas le focus à son déclencheur → gérer les deux.
+- **Div cliquable** : `onClick` sur une `div` ou un `span` → un `<button>` pour une action, un `<a>` pour une navigation.
+- **Champ sans étiquette** : placeholder utilisé comme étiquette → un `<label>` associé ; `aria-label` seulement quand il n'y a pas de place pour du texte visible.
+- **Erreur annoncée par la seule couleur** : bordure rouge sans texte → un message, lié au champ par `aria-describedby`.
+- **Action sans état** : bouton qui déclenche une requête sans passer en attente → état visible et soumission bloquée le temps de la requête.
+- **Contraste faible** : texte sous 4.5:1 sur son fond (3:1 pour du grand texte) → remonter le contraste.
+- **Animation non conditionnée** : transition ou mouvement sans `prefers-reduced-motion` → l'y conditionner.
+- **Titres cassés** : plusieurs `h1`, ou un niveau sauté → un seul `h1`, pas de saut.
+- **Image muette** : `<img>` sans `alt` → `alt` descriptif, ou `alt=""` si l'image est décorative.
+
+Corriger ce qui est constaté et dans le périmètre de la tranche ; écrire le reste dans `BACKLOG.md`, section « Capté en passant ». Ne rien passer en silence.
 
 Ce n'est pas une relecture de goût : la direction est déjà tranchée dans `DECISIONS.md`, cette étape la contrôle, elle ne la rediscute pas.
 
-## 4. Rendre compte
+## 5. Rendre compte
+
+Trois constats, **côte à côte et non fusionnés** :
+
+- **Parcours** — le verdict du sous-agent, tel qu'il l'a rendu.
+- **Utilisabilité** — ce que la relecture a trouvé, en `fichier:ligne`.
+- **Tenue** — la comparaison à la référence nommée.
+
+Ne pas les mélanger, ne pas les reclasser, ne pas en tirer un verdict unique. C'est le but de la séparation : un parcours qui aboutit ne prouve pas que ce soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne. Un verdict global laisserait l'un des trois masquer les autres.
 
 Dire ce qui a été constaté, pas ce qui devrait marcher. Si une partie n'a pas pu être vérifiée, le dire explicitement plutôt que de la présenter comme validée.
 
