@@ -6,7 +6,7 @@ C'est le setup qu'on utilise chez [OQIO](https://oqio.ch) pour sortir nos outils
 
 ## La boucle
 
-Quatre skills, dans `.claude/skills/`, entre 80 et 95 lignes chacune. Trois portent la boucle, la quatrième est un secours.
+Quatre skills, dans `.claude/skills/`, courtes — de l'ordre de quatre-vingts à cent lignes chacune. Trois portent la boucle, la quatrième est un secours.
 
 `/cadrage` et `/slice` sont des **commandes** : tu les tapes, elles ne se déclenchent jamais d'elles-mêmes et ne coûtent donc rien au contexte permanent (`disable-model-invocation: true`). `/verify` et `/debug` restent invocables par l'agent, parce que `/slice` les appelle — une skill user-invoked peut en appeler une model-invocable, jamais une autre user-invoked.
 

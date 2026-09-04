@@ -113,11 +113,17 @@ Rien d'automatisé, c'est volontaire — deux presets, même code :
 
 ## superpowers est coupé
 
-`.claude/settings.json` le désactive pour ce projet, et il est coupé globalement dans les settings user.
+`.claude/settings.json` le désactive pour ce projet, et cette ligne est **versionnée** : elle protège aussi quiconque clone le starter avec le plugin déjà installé. Sur la machine où ce dépôt a été refondu, il a fini désinstallé — cache compris.
 
 Ses 14 skills recouvraient notre chaîne case pour case (`brainstorming`↔`/cadrage`, `writing-plans` + `test-driven-development`↔`/slice`, `verification-before-completion`↔`/verify`), et son hook `SessionStart` ordonnait d'invoquer une skill avant toute réponse. Deux méthodologies pour le même travail, dont une qui gagnait toujours.
 
-Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/settings.json`. Ce qu'il faisait d'orthogonal (worktrees, sous-agents parallèles) est couvert par les outils natifs.
+Pour le remettre le temps d'un essai, il faut les **deux** gestes — le settings seul ne suffit pas si le plugin n'est plus sur la machine :
+
+```bash
+claude plugin install superpowers@claude-plugins-official
+```
+
+puis passer sa ligne à `true` dans `.claude/settings.json`. Ce qu'il faisait d'orthogonal (worktrees, sous-agents parallèles) est couvert par les outils natifs, et le debug par `/debug`.
 
 ---
 
