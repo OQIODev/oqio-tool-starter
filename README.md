@@ -43,7 +43,25 @@ npx prisma migrate deploy         # les tables auth sont déjà migrées dans le
 npm run dev
 ```
 
-Puis, dans Claude Code : `/cadrage` pour poser `SPEC.md` et `BACKLOG.md`, ensuite `/slice` autant de fois qu'il y a de tranches.
+Puis, dans Claude Code : `/cadrage` pour poser `SPEC.md`, `BACKLOG.md` et `CONTEXT.md`, ensuite `/slice` autant de fois qu'il y a de tranches.
+
+### Prérequis
+
+Les quatre skills sont dans le dépôt et n'ont rien à installer. Il reste **un** plugin à ajouter, et un second qui est optionnel :
+
+```bash
+claude plugin install frontend-design@claude-plugins-official
+```
+
+`/slice` le charge dès qu'une tranche touche à l'écran, en lui passant la direction visuelle de `DECISIONS.md` comme contrainte. Sans lui, cette moitié de l'étape 3 tombe.
+
+```bash
+claude plugin install ralph-loop@claude-plugins-official
+```
+
+Optionnel, et **terminal uniquement** : il fonctionne par un Stop hook, qui n'existe pas dans l'app. Il consomme le signal `<promise>BACKLOG VIDE</promise>` que `/slice` émet déjà. Sans lui, `/loop /slice` fait le même travail avec le mécanisme natif — c'est une commodité, pas une dépendance.
+
+Rien d'autre. En particulier **pas** de `superpowers` : ses skills recouvrent cette boucle case pour case et son hook `SessionStart` gagne systématiquement contre `/cadrage` (`.claude/settings.json` le désactive explicitement, voir `DECISIONS.md`).
 
 ## Ce qui est tranché — et à quel prix
 
