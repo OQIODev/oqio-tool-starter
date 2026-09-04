@@ -23,7 +23,7 @@ Quatre choses les rendent différentes d'un prompt bien tourné.
 
 **Chaque étape porte sa condition de fin, et rien n'est fini parce que ça compile.** Les cinq étapes de `/slice` se terminent sur un fait vérifiable — un critère recopié, un test vu échouer, un verdict rendu — et pas sur le sentiment d'avoir fini. Un build vert ne prouve rien sur un outil. Aucune tranche ne se clôt sans avoir été vue tourner, et le compte rendu doit dire ce qui a été sauté plutôt que de le présenter comme validé.
 
-**La boucle a un critère d'arrêt.** Quand le backlog est vide, `/slice` écrit `<promise>BACKLOG VIDE</promise>` et s'arrête. C'est ce qui la rend automatisable — avec `/loop` ou le plugin `ralph-loop`, tu lances et tu reviens plus tard. La skill a `AskUserQuestion` en `disallowed-tools` justement pour ne pas se bloquer sur une question au milieu de la nuit.
+**La boucle a un critère d'arrêt.** Quand le backlog est vide, `/slice` écrit `<promise>BACKLOG VIDE</promise>` et s'arrête. C'est ce qui la rend automatisable, à deux niveaux de garantie : avec le plugin `ralph-loop`, un Stop hook compare cette chaîne à celle qu'on lui a passée et coupe la boucle — l'arrêt est vérifié par un script, pas par le modèle ; avec `/loop` (natif, marche partout), la boucle tourne aussi mais l'arrêt reste une décision du modèle. La skill a `AskUserQuestion` en `disallowed-tools` justement pour ne pas se bloquer sur une question au milieu de la nuit.
 
 **Le backlog ne peut que rétrécir.** Une tranche livrée n'est pas cochée, elle est **retirée** du fichier, dans le même commit que le code — et son constat de vérification part dans [JOURNAL.md](JOURNAL.md) et dans le corps de ce commit. `BACKLOG.md` ne dit donc jamais que ce qui reste à faire, et `git log -p -- BACKLOG.md` rend chaque tranche livrée avec son critère, verbatim. Ce qui est livré **sans avoir été prouvé** va dans une section « Réserves » : c'est ce qu'on cherche en premier trois semaines plus tard, et c'est sinon enterré dans des tranches marquées faites.
 
@@ -59,7 +59,7 @@ claude plugin install frontend-design@claude-plugins-official
 claude plugin install ralph-loop@claude-plugins-official
 ```
 
-Optionnel, et **terminal uniquement** : il fonctionne par un Stop hook, qui n'existe pas dans l'app. Il consomme le signal `<promise>BACKLOG VIDE</promise>` que `/slice` émet déjà. Sans lui, `/loop /slice` fait le même travail avec le mécanisme natif — c'est une commodité, pas une dépendance.
+Optionnel mais **pas remplaçable**, et **terminal uniquement** : il fonctionne par un Stop hook, qui n'existe pas dans l'app. C'est ce hook qui fait sa valeur — il compare le contenu de `<promise>…</promise>` à la chaîne attendue, caractère par caractère, dans un script bash, et plafonne les tours avec `--max-iterations`. L'arrêt est donc vérifié **hors du modèle**. `/loop /slice` boucle aussi, mais s'y arrête quand le modèle *décide* qu'il a fini, sans contrôle externe. Pour une boucle lancée avant d'aller dormir, ce n'est pas le même contrat.
 
 Rien d'autre. En particulier **pas** de `superpowers` : ses skills recouvrent cette boucle case pour case et son hook `SessionStart` gagne systématiquement contre `/cadrage` (`.claude/settings.json` le désactive explicitement, voir `DECISIONS.md`).
 

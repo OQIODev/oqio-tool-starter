@@ -66,7 +66,7 @@ Pour enchaîner sans toi :
 /loop /slice
 ```
 
-Natif, marche partout. Sans intervalle, il relance `/slice` quand le précédent a fini.
+Natif, marche partout. Sans intervalle, il relance `/slice` quand le précédent a fini. Mais **l'arrêt reste une décision du modèle** : commode pour deux ou trois tranches qu'on suit du coin de l'œil, pas pour une nuit sans personne.
 
 En terminal uniquement, avec critère d'arrêt strict :
 
@@ -128,8 +128,8 @@ Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/s
 | Démarrer un outil de zéro | `git clone` du starter (étape 0) |
 | Transformer une idée en spec | `/cadrage` |
 | Avancer sur le projet, sans plus de précision | `/slice` |
-| Développer plusieurs tranches sans surveiller | `/loop /slice` |
-| Idem, en terminal, avec critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
+| Enchaîner deux ou trois tranches, en gardant un œil | `/loop /slice` — arrêt décidé par le modèle |
+| Laisser tourner sans personne | `/ralph-loop` — arrêt vérifié par un script, terminal uniquement |
 | Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
 | Un bug résiste, ou une correction a déjà raté | `/debug` |

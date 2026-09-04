@@ -21,6 +21,8 @@ Si la section « Tranches » est vide : ne rien implémenter, s'arrêter, et éc
 <promise>BACKLOG VIDE</promise>
 ```
 
+Cette chaîne est comparée **caractère par caractère** par le Stop hook de `ralph-loop` : une casse changée, un point ajouté, et la boucle ne s'arrête jamais — sans erreur, jusqu'à `--max-iterations`. Ne la modifier ici qu'en la modifiant aussi dans la commande.
+
 Ne l'écrire que si c'est littéralement vrai. Jamais pour sortir d'une boucle où on se sent bloqué. Une réserve ou une ligne de « Capté en passant » n'est pas une tranche : le backlog peut être vide alors que le fichier ne l'est pas.
 
 Si la tranche demande une action hors dépôt — un clic dans une console, un secret à poser, un arbitrage — ne rien implémenter : décrire exactement le geste attendu, puis passer à la première tranche implémentable en le disant. Ces tranches restent dans le fichier ; ce sont elles qui, sinon, finissent en réserves que personne ne voit.
