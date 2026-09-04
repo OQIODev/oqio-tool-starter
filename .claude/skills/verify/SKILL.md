@@ -1,7 +1,7 @@
 ---
 name: verify
 description: Vérifie qu'une tranche marche vraiment — checks automatiques puis parcours réel dans l'app qui tourne, constaté par un tiers. Use when l'utilisateur demande si ça marche, avant de clore une tranche, ou avant un commit.
-allowed-tools: Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Bash(git *) Skill WebFetch Agent
+allowed-tools: Read Grep Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Bash(git *) Agent
 ---
 
 Un build vert ne prouve pas qu'un outil marche. Les étapes 1 à 3 sont obligatoires ; la 4 l'est dès que la tranche a touché à l'écran.
@@ -55,26 +55,9 @@ Ne pas demander à l'utilisateur de vérifier à sa place.
 
 Seulement si la tranche a touché à l'écran — sinon passer directement à l'étape 5.
 
-Charger `web-design-guidelines` sur les fichiers modifiés par la tranche : il va chercher les règles à jour et rend ses constats en `fichier:ligne`.
+La barre est [`.claude/rules/web-interface-guidelines.md`](../../rules/web-interface-guidelines.md) : 17 catégories, une centaine de règles, figées dans le dépôt. La lire, l'appliquer aux fichiers modifiés par la tranche, et rendre les constats en `fichier:ligne` selon le format de sortie qu'elle décrit.
 
-**La baseline ci-dessous s'applique de toute façon**, y compris si le chargement échoue ou si le réseau est coupé. Deux règles la bordent :
-
-- **Le projet l'emporte.** Une convention écrite dans `CLAUDE.md` ou `DECISIONS.md` gagne contre la baseline ; ce qu'ESLint impose déjà n'est pas à re-signaler.
-- **C'est un jugement, jamais une violation dure.** On signale « cible tactile probablement trop petite », pas « erreur ».
-
-Chaque point se lit *ce que c'est* → *comment corriger* :
-
-- **Cible tactile minuscule** : zone cliquable sous 24 px → l'agrandir, 44 px si l'outil sert sur mobile.
-- **Focus invisible** : `outline: none` sans remplacement, ou anneau de focus absent → un état de focus visible sur tout ce qui est atteignable au clavier.
-- **Piège au clavier** : modale ou menu qui ne se ferme pas à Échap, ou qui ne rend pas le focus à son déclencheur → gérer les deux.
-- **Div cliquable** : `onClick` sur une `div` ou un `span` → un `<button>` pour une action, un `<a>` pour une navigation.
-- **Champ sans étiquette** : placeholder utilisé comme étiquette → un `<label>` associé ; `aria-label` seulement quand il n'y a pas de place pour du texte visible.
-- **Erreur annoncée par la seule couleur** : bordure rouge sans texte → un message, lié au champ par `aria-describedby`.
-- **Action sans état** : bouton qui déclenche une requête sans passer en attente → état visible et soumission bloquée le temps de la requête.
-- **Contraste faible** : texte sous 4.5:1 sur son fond (3:1 pour du grand texte) → remonter le contraste.
-- **Animation non conditionnée** : transition ou mouvement sans `prefers-reduced-motion` → l'y conditionner.
-- **Titres cassés** : plusieurs `h1`, ou un niveau sauté → un seul `h1`, pas de saut.
-- **Image muette** : `<img>` sans `alt` → `alt` descriptif, ou `alt=""` si l'image est décorative.
+Elle est **locale et figée exprès** : la barre ne doit pas changer entre deux tranches sans qu'on l'ait voulu. Ne pas aller chercher une version fraîche en ligne pendant une vérification — le fichier porte sa commande de rafraîchissement, qui se lance sur intention et se relit en `git diff`. Les deux règles qui bordent son usage (le projet l'emporte, c'est un jugement jamais une violation dure) sont dans son en-tête.
 
 Corriger ce qui est constaté et dans le périmètre de la tranche ; écrire le reste dans `BACKLOG.md`, section « Capté en passant ». Ne rien passer en silence.
 

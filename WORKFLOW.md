@@ -92,11 +92,7 @@ Il épingle d'abord ce qu'il vérifie (le critère recopié mot pour mot, le dif
 
 Il rend trois constats **séparés** : le parcours, l'utilisabilité (a11y, clavier, contraste, en `fichier:ligne`), et la tenue face à la référence nommée. Pas de verdict global — un parcours qui aboutit ne prouve pas que ce soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne.
 
-Pour la relecture d'interface seule, sur du code bricolé à la main :
-
-```
-/web-design-guidelines src/app/**/*.tsx
-```
+La barre d'utilisabilité est un fichier du dépôt, `.claude/rules/web-interface-guidelines.md` — 17 catégories reprises de Vercel, figées au commit. Elle ne se rafraîchit pas pendant une vérification : la commande est dans son en-tête, elle se lance sur intention et se relit en `git diff`. Une barre qui bouge sans qu'on le sache ne mesure rien.
 
 ### 4. Nettoyer et livrer
 
@@ -136,7 +132,7 @@ Pour le remettre le temps d'un essai : passer sa ligne à `true` dans `.claude/s
 | Idem, en terminal, avec critère d'arrêt strict | `/ralph-loop` (terminal uniquement) |
 | Arrêter une boucle ralph en cours | `/cancel-ralph` |
 | Savoir si ça marche vraiment | `/verify` |
-| Savoir si l'interface tient (a11y, clavier, contraste) | `/web-design-guidelines` |
+| Savoir si l'interface tient (a11y, clavier, contraste) | `/verify` — il applique `.claude/rules/web-interface-guidelines.md` |
 | Voir l'app tourner | `/run` |
 | Nettoyer sans changer le comportement | `/simplify` |
 | Relire avant merge | `/code-review` |

@@ -21,6 +21,7 @@ C'est la règle qui compte le plus. Il existe exactement une façon de faire cha
 | Validation d'entrée | Zod |
 | Classes CSS conditionnelles | `cn()` de `@/lib/utils/cn` |
 | Couleurs et typo | Les tokens `@theme` de `src/app/globals.css` — jamais une valeur en dur |
+| Barre d'utilisabilité de l'interface | `.claude/rules/web-interface-guidelines.md` — figé, jamais refetché en cours de vérification |
 
 Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de hit DB). Il ne remplace jamais `requireAuthUser()` côté serveur.
 

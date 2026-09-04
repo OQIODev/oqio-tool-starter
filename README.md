@@ -77,7 +77,7 @@ Si tu veux la boucle sans le starter — sur du Rails, du SvelteKit, du Go — e
 3. **`verify`, § « Parcours réel »** — la préparation de l'infra avant le parcours (base qui tourne, migrations à jour) et la note sur le serveur de dev.
 4. **`slice`, § « Implémenter »** et **`verify`, § « Checks automatiques »** — `npm run verify` (lint + typecheck + tests unitaires). Une seule commande qui doit sortir en code 0.
 5. **`cadrage`, § « Les six axes »** — la question sur le preset de déploiement.
-6. **`verify`, § « Relecture de l'interface »** — la baseline d'utilisabilité est écrite pour du web. Sur une autre cible, c'est elle qu'il faut remplacer.
+6. **`.claude/rules/web-interface-guidelines.md`** — la barre d'utilisabilité, reprise de [vercel-labs](https://github.com/vercel-labs/web-interface-guidelines) (MIT) et **figée au commit** plutôt que refetchée : une barre de jugement qui change sans qu'on le sache ne mesure rien. Elle est écrite pour du web — sur une autre cible, c'est ce fichier qu'il faut remplacer.
 
 Les renvois sont à des sections, pas à des numéros de ligne : un doc qui cite une ligne ment dès la première réécriture du skill.
 
