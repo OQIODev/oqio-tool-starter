@@ -1,7 +1,7 @@
 ---
 name: verify
 description: Vérifie qu'une tranche marche vraiment — checks automatiques puis parcours réel dans l'app qui tourne, constaté par un tiers. Use when l'utilisateur demande si ça marche, avant de clore une tranche, ou avant un commit.
-allowed-tools: Read Grep Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Bash(git *) Agent
+allowed-tools: Read Grep Glob Edit Write Bash(npm run *) Bash(npx prisma *) Bash(docker compose *) Bash(git *) Agent
 ---
 
 Un build vert ne prouve pas qu'un outil marche. Les étapes 1 à 3 sont obligatoires ; la 4 l'est dès que la tranche a touché à l'écran.
