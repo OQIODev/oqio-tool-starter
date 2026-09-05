@@ -10,8 +10,10 @@ Un build vert ne prouve pas qu'un outil marche. Les étapes 1 à 3 sont obligato
 
 Avant de lancer quoi que ce soit, savoir exactement ce qu'on vérifie et contre quoi :
 
-- **Le critère**, recopié **mot pour mot** depuis la tranche dans `BACKLOG.md`, plus le critère de réussite de `SPEC.md`. Pas reformulé — recopié.
-- **Le diff**, depuis le dernier commit : `git diff HEAD --stat` et `git status --porcelain`. Si le diff est vide, il n'y a rien à vérifier — le dire et s'arrêter là.
+- **La tranche.** Celle que l'utilisateur désigne ; sinon la première de la section « Tranches » de `BACKLOG.md`. Si le diff ne ressemble pas à cette tranche-là, ne pas deviner : le dire et demander laquelle.
+- **Le critère**, recopié **mot pour mot** depuis la tranche, plus le critère de réussite de `SPEC.md`. Pas reformulé — recopié. Une Vérif qui porte plusieurs points séparés par `·` se recopie **en entier** : chacun est un verdict, aucun ne se laisse tomber parce que la tranche n'y a pas touché.
+- **Le port de dev**, lu dans `package.json`. Il est fixe et propre à ce dépôt, et le sous-agent de l'étape 3 en a besoin : sans lui, il ne peut pas remplir l'obligation qu'on lui donne de vérifier quel serveur il pilote.
+- **Le diff**, depuis le dernier commit : `git diff HEAD --stat` **et** `git status --porcelain`. Les deux, jamais l'un seul — `git diff` ne voit pas les fichiers non suivis, et une tranche qui ne fait qu'ajouter des fichiers lui paraît vide alors qu'elle a tout écrit. C'est quand **les deux** ne rendent rien qu'il n'y a rien à vérifier : le dire et s'arrêter là.
 - **La ligne de direction visuelle** de `DECISIONS.md`, si la tranche a touché à l'écran.
 
 Un point fixe qui ne résout pas, un critère absent ou un diff vide doivent échouer **ici**, pas dans un sous-agent lancé pour rien.
@@ -38,7 +40,7 @@ Puis lancer un sous-agent `general-purpose` dont le prompt contient :
 
 - le critère et le critère de réussite, tels qu'épinglés à l'étape 1
 - la consigne de lancer l'app et de piloter le navigateur lui-même, screenshot inclus
-- l'obligation de s'assurer que le serveur qu'il pilote est bien **celui de ce dossier** avant de constater quoi que ce soit — un dev server d'un autre projet sur le même port donne un faux verdict dans les deux sens, et il est aveugle au code, donc rien ne le lui signalera
+- **le port de dev épinglé à l'étape 1**, et l'obligation de s'assurer que le serveur qu'il pilote est bien **celui de ce dossier** avant de constater quoi que ce soit — un dev server d'un autre projet sur le même port donne un faux verdict dans les deux sens, et il est aveugle au code, donc rien ne le lui signalera
 - l'interdiction de lire le diff, le dernier commit, le plan ou le compte rendu — il constate ce qu'il voit à l'écran, pas ce que le code prétend faire
 - l'interdiction de corriger quoi que ce soit : il constate, il ne répare pas
 - l'obligation de regarder les logs serveur — une page qui s'affiche avec une erreur 500 derrière n'est pas verte
@@ -68,8 +70,8 @@ Ce n'est pas une relecture de goût : la direction est déjà tranchée dans `DE
 Trois constats, **côte à côte et non fusionnés** :
 
 - **Parcours** — le verdict du sous-agent, tel qu'il l'a rendu.
-- **Utilisabilité** — ce que la relecture a trouvé, en `fichier:ligne`.
-- **Tenue** — la comparaison à la référence nommée.
+- **Utilisabilité** — ce que la relecture a trouvé, en `fichier:ligne`, **et ce qu'il en reste** : corrigé, ou reporté dans « Capté en passant ». Rapporter les constats après correction ferait disparaître le travail de l'étape 4.
+- **Tenue** — la comparaison à la référence nommée. S'il n'y a pas de référence, ou si la ligne dit `À TRANCHER`, ce constat est **sans objet** et s'écrit tel quel — ne jamais s'inventer une référence pour remplir la case, ne jamais faire disparaître la ligne non plus.
 
 Ne pas les mélanger, ne pas les reclasser, ne pas en tirer un verdict unique. C'est le but de la séparation : un parcours qui aboutit ne prouve pas que ce soit utilisable, et une interface utilisable ne prouve pas qu'elle tienne. Un verdict global laisserait l'un des trois masquer les autres.
 
