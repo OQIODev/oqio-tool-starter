@@ -38,13 +38,13 @@ Le check du [proxy](src/proxy.ts) est **optimiste** (présence de cookie, pas de
 
 ## Commandes
 ```
-npm run dev              # Dev (port 3000)
+npm run dev              # Dev — port : voir le script `dev` de package.json
 npm run verify           # lint + typecheck + tests unit — à passer avant tout commit
 npm run build            # Build production
 npm test                 # Tests unit, une passe
 npm run test:watch       # Vitest en watch — le seul mode qui ne rend pas la main
 npm run test:integration # Vitest contre un vrai Postgres (base <base>_test)
-npm run test:e2e         # Playwright, navigateur réel (base <base>_e2e, port 3100)
+npm run test:e2e         # Playwright, navigateur réel (base <base>_e2e, port dev + 100)
 npx prisma migrate dev   # Nouvelle migration (dev)
 docker compose up -d     # Postgres local
 ```
